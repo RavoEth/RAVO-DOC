@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![RAVO Logo](https://raw.githubusercontent.com/ravo-dapp/ravo-home-page/main/public/images/Ravologo.png)
+![RAVO Logo](https://red-additional-perch-964.mypinata.cloud/ipfs/bafybeigmejwloxoakapcstxqrbntziwznwsukirhydym5bet2vjloaa5ym)
 
 **Understanding RAVO's Economic Model and Financial Mechanics**
 
@@ -254,22 +254,7 @@ const currentPrice = calculateTokenPrice(
 ### **Reserve Mechanics**
 
 #### **ETH Reserve Management**
-```javascript
-// Virtual reserves initialization
-const virtualEthReserve = (6 * migrationThreshold) / 17;
-const virtualTokenReserve = (totalSupplyForSale * (virtualEthReserve + migrationThreshold)) / migrationThreshold;
-
-// Reserve ratio maintenance
-function maintainReserveRatio(ethAdded, tokensRemoved) {
-  const newEthReserve = virtualEthReserve + ethAdded;
-  const newTokenReserve = virtualTokenReserve - tokensRemoved;
-
-  // Update k constant (product of reserves)
-  const k = newEthReserve * newTokenReserve;
-
-  return { newEthReserve, newTokenReserve, k };
-}
-```
+The bonding curve maintains virtual reserves that determine token pricing and ensure liquidity availability.
 
 #### **Reserve Ratio Examples**
 
@@ -283,50 +268,10 @@ function maintainReserveRatio(ethAdded, tokensRemoved) {
 ### **Price Discovery Process**
 
 #### **Buy Order Mechanics**
-```javascript
-function processBuyOrder(ethAmount, currentSupply, virtualEthReserve, virtualTokenReserve) {
-  // Step 1: Calculate fee
-  const feeAmount = ethAmount * platformFeeRate;
-  const netEth = ethAmount - feeAmount;
-
-  // Step 2: Update virtual reserves
-  const newVirtualEthReserve = virtualEthReserve + netEth;
-  const newVirtualTokenReserve = k / newVirtualEthReserve;
-
-  // Step 3: Calculate tokens to mint
-  const tokensToMint = virtualTokenReserve - newVirtualTokenReserve;
-
-  // Step 4: Update state
-  virtualEthReserve = newVirtualEthReserve;
-  virtualTokenReserve = newVirtualTokenReserve;
-  currentSupply += tokensToMint;
-
-  return tokensToMint;
-}
-```
+Buy orders increase the ETH reserve and decrease the token reserve, resulting in higher token prices for subsequent trades.
 
 #### **Sell Order Mechanics**
-```javascript
-function processSellOrder(tokenAmount, currentSupply, virtualEthReserve, virtualTokenReserve) {
-  // Step 1: Update virtual reserves
-  const newVirtualTokenReserve = virtualTokenReserve + tokenAmount;
-  const newVirtualEthReserve = k / newVirtualTokenReserve;
-
-  // Step 2: Calculate ETH to return
-  const grossEth = virtualEthReserve - newVirtualEthReserve;
-
-  // Step 3: Calculate and deduct fee
-  const feeAmount = grossEth * platformFeeRate;
-  const netEth = grossEth - feeAmount;
-
-  // Step 4: Update state
-  virtualEthReserve = newVirtualEthReserve;
-  virtualTokenReserve = newVirtualTokenReserve;
-  currentSupply -= tokenAmount;
-
-  return netEth;
-}
-```
+Sell orders increase the token reserve and decrease the ETH reserve, resulting in lower token prices for subsequent trades.
 
 ---
 
@@ -556,130 +501,6 @@ console.log(analysis);
 
 ---
 
-## 📈 Financial Projections
-
-### **Revenue Modeling**
-
-#### **Conservative Scenario**
-```json
-{
-  "dailyVolume": "50 ETH",
-  "platformFee": "1%",
-  "creatorShare": "50%",
-  "dailyRevenue": "0.25 ETH",
-  "monthlyRevenue": "7.5 ETH",
-  "yearlyRevenue": "91.25 ETH",
-  "breakEvenPeriod": "2 weeks"
-}
-```
-
-#### **Moderate Scenario**
-```json
-{
-  "dailyVolume": "200 ETH",
-  "platformFee": "1%",
-  "creatorShare": "50%",
-  "dailyRevenue": "1 ETH",
-  "monthlyRevenue": "30 ETH",
-  "yearlyRevenue": "365 ETH",
-  "breakEvenPeriod": "3 days"
-}
-```
-
-#### **Optimistic Scenario**
-```json
-{
-  "dailyVolume": "1000 ETH",
-  "platformFee": "1%",
-  "creatorShare": "50%",
-  "dailyRevenue": "5 ETH",
-  "monthlyRevenue": "150 ETH",
-  "yearlyRevenue": "1825 ETH",
-  "breakEvenPeriod": "12 hours"
-}
-```
-
-### **Value Creation Metrics**
-
-#### **Token Value Growth**
-```javascript
-function projectTokenValue(
-  initialPrice,
-  growthRate,
-  timeHorizon,
-  dailyVolume,
-  feeCapture
-) {
-  let currentPrice = initialPrice;
-  let totalFeesCaptured = 0;
-
-  for (let day = 0; day < timeHorizon; day++) {
-    // Price appreciation from community growth
-    currentPrice *= (1 + growthRate / 365);
-
-    // Fee capture from trading volume
-    const dailyFees = dailyVolume * feeCapture;
-    totalFeesCaptured += dailyFees;
-
-    // Reinvest fees into buybacks
-    if (day % 30 === 0) { // Monthly buyback
-      const buybackAmount = totalFeesCaptured * 0.25;
-      // Buyback increases token value
-      currentPrice *= (1 + buybackAmount / (currentPrice * 1000000));
-    }
-  }
-
-  return {
-    finalPrice: currentPrice,
-    totalFeesCaptured,
-    priceAppreciation: ((currentPrice - initialPrice) / initialPrice) * 100
-  };
-}
-```
-
-#### **Return on Investment (ROI)**
-```javascript
-function calculateROI(initialInvestment, projectedRevenue, timeHorizon) {
-  const totalRevenue = projectedRevenue * timeHorizon;
-  const netProfit = totalRevenue - initialInvestment;
-  const roi = (netProfit / initialInvestment) * 100;
-
-  return {
-    totalRevenue,
-    netProfit,
-    roi,
-    paybackPeriod: initialInvestment / projectedRevenue
-  };
-}
-```
-
-### **Risk-Adjusted Returns**
-
-#### **Volatility Analysis**
-```json
-{
-  "lowVolatility": {
-    "expectedReturn": "150%",
-    "riskLevel": "Low",
-    "probability": "70%",
-    "timeframe": "6-12 months"
-  },
-  "mediumVolatility": {
-    "expectedReturn": "300%",
-    "riskLevel": "Medium",
-    "probability": "50%",
-    "timeframe": "3-6 months"
-  },
-  "highVolatility": {
-    "expectedReturn": "1000%+",
-    "riskLevel": "High",
-    "probability": "20%",
-    "timeframe": "1-3 months"
-  }
-}
-```
-
----
 
 ## 🎯 Strategic Considerations
 

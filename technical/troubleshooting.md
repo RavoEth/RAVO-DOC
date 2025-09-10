@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![RAVO Logo](https://raw.githubusercontent.com/ravo-dapp/ravo-home-page/main/public/images/Ravologo.png)
+![RAVO Logo](https://red-additional-perch-964.mypinata.cloud/ipfs/bafybeigmejwloxoakapcstxqrbntziwznwsukirhydym5bet2vjloaa5ym)
 
 **Complete Troubleshooting Guide for RAVO Protocol**
 
@@ -891,7 +891,7 @@ async function inspectContractState(contractAddress) {
 
 #### **Community Support**
 - **Telegram**: [@ravodapp](https://t.me/Ravoeth) - Community discussions
-- **Discord**: [RAVO Community](https://discord.gg/ravo) - Technical discussions
+- **Telegram**: [RAVO Community](https://t.me/Ravoeth) - Technical discussions
 - **GitHub Issues**: [Report bugs](https://github.com/ravo-dapp/ravo-platform/issues)
 
 #### **Professional Support**

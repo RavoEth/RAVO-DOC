@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![RAVO Logo](https://raw.githubusercontent.com/ravo-dapp/ravo-home-page/main/public/images/Ravologo.png)
+![RAVO Logo](https://red-additional-perch-964.mypinata.cloud/ipfs/bafybeigmejwloxoakapcstxqrbntziwznwsukirhydym5bet2vjloaa5ym)
 
 **Complete Technical Integration Guide for RAVO Protocol**
 
@@ -21,7 +21,6 @@
 - [WebSocket Streams](#websocket-streams)
 - [Security Best Practices](#security-best-practices)
 - [Testing & Deployment](#testing--deployment)
-- [Formula Protection](#formula-protection)
 
 ---
 
@@ -44,10 +43,10 @@ MetaMask, Coinbase Wallet, or compatible Web3 wallet
 | **Frontend** | React 18 + TypeScript + Vite | User interface and interactions |
 | **Styling** | Tailwind CSS + shadcn/ui | Responsive design and components |
 | **Web3** | wagmi + viem + Reown | Blockchain connectivity |
-| **Database** | Supabase (PostgreSQL) | Data storage and real-time updates |
-| **Real-time** | WebSocket + Supabase Real-time | Live price feeds and notifications |
+| **Database** | PostgreSQL | Data storage and real-time updates |
+| **Real-time** | WebSocket + Real-time Database | Live price feeds and notifications |
 | **Charts** | TradingVue.js + Lightweight Charts | Trading interface and analytics |
-| **State Management** | React Context + Supabase | Application state |
+| **State Management** | React Context + Database | Application state |
 
 ### **Network Requirements**
 
@@ -68,12 +67,12 @@ graph TB
         REACT[React/Vite Web App]
         WAGMI[wagmi Web3 Provider]
         WS_CLIENT[WebSocket Client]
-        SUPABASE[Supabase Client]
+        DB_CLIENT[Database Client]
     end
 
     subgraph "Real-time Layer"
         WS_SERV[WebSocket Server]
-        SUPABASE_API[Supabase Real-time]
+        DB_API[Database Real-time]
     end
 
     subgraph "Smart Contract Layer"
@@ -85,22 +84,22 @@ graph TB
 
     subgraph "Infrastructure"
         INDEXER[Blockchain Indexer]
-        SUPABASE[(Supabase)]
+        DATABASE[(Database)]
         MONITOR[Health Monitoring]
     end
 
     REACT --> WAGMI
     REACT --> WS_CLIENT
-    REACT --> SUPABASE
+    REACT --> DB_CLIENT
     WAGMI --> FACTORY
     WAGMI --> BONDING
     WAGMI --> TOKEN
     WS_CLIENT --> WS_SERV
-    SUPABASE --> SUPABASE_API
+    DB_CLIENT --> DB_API
     INDEXER --> FACTORY
     INDEXER --> BONDING
     INDEXER --> TOKEN
-    INDEXER --> SUPABASE
+    INDEXER --> DATABASE
     MONITOR --> INDEXER
 ```
 
@@ -113,8 +112,9 @@ graph TB
 
 #### **Bonding Curve Contract**
 - **Dynamic Deployment**: New instance per token
-- **Formula Protection**: Proprietary algorithm with IP safeguards
-- **Auto-Migration**: Seamless Uniswap integration
+- **Security Features**: Advanced security protocols and encryption
+- **Custom Migration Threshold**: Token creators can set their own migration threshold
+- **Auto-Migration**: Seamless Uniswap integration when threshold is reached
 
 #### **ERC-20 Token Contract**
 - **Standard Compliance**: Full ERC-20 implementation
@@ -440,19 +440,603 @@ async function updateTokenMetadata(tokenAddress) {
 
 ---
 
-## 🔗 Database Integration
+## 🎯 Custom Migration Threshold Feature
 
-### **Supabase Integration**
+### **Understanding Migration Thresholds**
 
-RAVO uses Supabase (PostgreSQL) for data storage and real-time updates. The platform provides direct database access through Supabase client.
+The **Custom Migration Threshold** is one of RAVO's most important innovations, allowing token creators to control when their token migrates from the bonding curve to Uniswap V2.
+
+#### **How It Works**
 
 ```javascript
-import { createClient } from '@supabase/supabase-js';
+// Migration threshold determines when automatic migration occurs
+const migrationThreshold = parseEther("0.005"); // 0.005 ETH
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// When bonding curve ETH balance reaches this threshold:
+// 1. Trading is temporarily disabled
+// 2. All ETH and tokens are used to create Uniswap liquidity
+// 3. Token graduates to Uniswap V2 for full DEX trading
+```
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+#### **Migration Threshold Parameters**
+
+| **Parameter** | **Type** | **Description** | **Constraints** |
+|---------------|----------|-----------------|-----------------|
+| `migrationThreshold` | `uint256` | ETH amount required for migration | `>= 0.00019 ETH` |
+| `minThreshold` | `uint256` | Minimum allowed threshold | `0.00019 ETH` (enforced) |
+| `currentBalance` | `uint256` | Current ETH in bonding curve | Real-time value |
+
+#### **Migration Threshold Examples**
+
+```javascript
+// Conservative approach - more bonding curve trading
+const conservativeThreshold = parseEther("0.01");   // 0.01 ETH
+// Benefits: More time on bonding curve, higher liquidity before Uniswap
+
+// Balanced approach - moderate threshold
+const balancedThreshold = parseEther("0.005");      // 0.005 ETH  
+// Benefits: Good balance between bonding curve and Uniswap phases
+
+// Aggressive approach - quick Uniswap migration
+const aggressiveThreshold = parseEther("0.001");    // 0.001 ETH
+// Benefits: Fast Uniswap access, immediate DEX exposure
+```
+
+#### **Migration Process Flow**
+
+```javascript
+// 1. Token creation with custom threshold
+const tx = await factory.createToken(
+  "MyToken",
+  "MTK", 
+  "https://t.me/mytoken",
+  "https://mytoken.com",
+  "https://x.com/mytoken",
+  "My awesome project",
+  parseEther("0.005"), // Custom migration threshold
+  parseEther("0.1"),   // Initial buy amount
+  0                    // Launch timestamp
+);
+
+// 2. Monitor migration progress
+const bondingCurve = new ethers.Contract(bondingCurveAddress, BONDING_CURVE_ABI, provider);
+
+// Get current migration status
+const [migrated, isMigrating, canRetry] = await bondingCurve.getMigrationStatus();
+const progress = await bondingCurve.getProgress(); // Percentage towards migration
+const currentBalance = await provider.getBalance(bondingCurveAddress);
+
+console.log({
+  migrated,           // false
+  isMigrating,        // false  
+  canRetry,          // false
+  progress,          // 25 (25% towards migration)
+  currentBalance,    // 0.00125 ETH
+  threshold: "0.005 ETH"
+});
+
+// 3. Migration triggers automatically when threshold reached
+// No manual intervention required - fully automated
+```
+
+#### **Migration Threshold Benefits**
+
+##### **For Token Creators**
+- **🎯 Strategic Control**: Choose optimal migration timing
+- **📈 Market Strategy**: Align migration with project milestones
+- **💰 Liquidity Planning**: Control pre-Uniswap liquidity amount
+- **🚀 Growth Management**: Balance bonding curve vs Uniswap phases
+
+##### **For Traders**
+- **📊 Predictable Migration**: Clear threshold visibility
+- **⚡ Fair Access**: Equal opportunity during bonding curve phase
+- **🔄 Seamless Transition**: Automatic migration without manual intervention
+- **📈 Enhanced Liquidity**: Gradual liquidity increase before Uniswap
+
+#### **Migration Threshold Best Practices**
+
+```javascript
+// 1. Consider your project goals
+const projectGoals = {
+  quickUniswapAccess: parseEther("0.001"),    // Fast DEX exposure
+  balancedApproach: parseEther("0.005"),      // Moderate threshold
+  extendedBondingCurve: parseEther("0.01")    // More bonding curve trading
+};
+
+// 2. Factor in market conditions
+const marketConditions = {
+  bullMarket: parseEther("0.003"),    // Lower threshold for faster growth
+  bearMarket: parseEther("0.008"),    // Higher threshold for stability
+  volatileMarket: parseEther("0.005") // Balanced approach
+};
+
+// 3. Consider tokenomics
+const tokenomics = {
+  highSupply: parseEther("0.01"),     // Higher threshold for large supply
+  lowSupply: parseEther("0.002"),     // Lower threshold for small supply
+  standardSupply: parseEther("0.005") // Standard threshold
+};
+```
+
+#### **Migration Monitoring**
+
+```javascript
+// Real-time migration monitoring
+class MigrationMonitor {
+  constructor(bondingCurveAddress, provider) {
+    this.bondingCurve = new ethers.Contract(bondingCurveAddress, BONDING_CURVE_ABI, provider);
+  }
+
+  async getMigrationStatus() {
+    const [migrated, isMigrating, canRetry] = await this.bondingCurve.getMigrationStatus();
+    const progress = await this.bondingCurve.getProgress();
+    const currentBalance = await this.bondingCurve.provider.getBalance(this.bondingCurve.address);
+    const threshold = await this.bondingCurve.migrationThreshold();
+    
+    return {
+      migrated,
+      isMigrating,
+      canRetry,
+      progress,
+      currentBalance: ethers.utils.formatEther(currentBalance),
+      threshold: ethers.utils.formatEther(threshold),
+      remaining: ethers.utils.formatEther(threshold.sub(currentBalance))
+    };
+  }
+
+  // Monitor migration progress
+  async monitorProgress(callback) {
+    const status = await this.getMigrationStatus();
+    callback(status);
+    
+    if (!status.migrated && !status.isMigrating) {
+      // Continue monitoring
+      setTimeout(() => this.monitorProgress(callback), 5000);
+    }
+  }
+}
+
+// Usage
+const monitor = new MigrationMonitor(bondingCurveAddress, provider);
+monitor.monitorProgress((status) => {
+  console.log(`Migration Progress: ${status.progress}%`);
+  console.log(`Current Balance: ${status.currentBalance} ETH`);
+  console.log(`Threshold: ${status.threshold} ETH`);
+  console.log(`Remaining: ${status.remaining} ETH`);
+});
+```
+
+---
+
+## 🔗 API Integration
+
+### **WebSocket API Endpoints**
+
+Based on your WebSocket server implementation, here are the available API endpoints:
+
+#### **Connection Management**
+
+```javascript
+// Connect to WebSocket server
+const ws = new WebSocket('wss://your-domain.ngrok.io');
+
+// Send connection message (automatic on connect)
+ws.onopen = () => {
+  console.log('Connected to RAVO WebSocket server');
+};
+```
+
+#### **Subscription API**
+
+```javascript
+// Subscribe to channels
+const subscribeMessage = {
+  type: 'subscribe',
+  data: {
+    channel: 'all_events',        // Channel name
+    tokenAddress: '0x...'         // Optional: for token-specific channels
+  }
+};
+
+ws.send(JSON.stringify(subscribeMessage));
+
+// Unsubscribe from channels
+const unsubscribeMessage = {
+  type: 'unsubscribe',
+  data: {
+    channel: 'all_events',
+    tokenAddress: '0x...'
+  }
+};
+
+ws.send(JSON.stringify(unsubscribeMessage));
+```
+
+#### **Data Request API**
+
+```javascript
+// Get tokens data
+const getTokensMessage = {
+  type: 'get_tokens',
+  data: {
+    filter: 'active',    // 'all', 'active', 'live', 'migrated'
+    limit: 50,
+    offset: 0
+  }
+};
+
+ws.send(JSON.stringify(getTokensMessage));
+
+// Get transactions for specific token
+const getTransactionsMessage = {
+  type: 'get_transactions',
+  data: {
+    tokenAddress: '0x1F2219162955396B9d5140d71d2C8832F5471253',
+    limit: 50,
+    offset: 0
+  }
+};
+
+ws.send(JSON.stringify(getTransactionsMessage));
+
+// Get chart data
+const getChartMessage = {
+  type: 'get_chart',
+  data: {
+    tokenAddress: '0x1F2219162955396B9d5140d71d2C8832F5471253',
+    timeframe: '1h',     // '1m', '5m', '15m', '1h', '4h', '1d'
+    limit: 100
+  }
+};
+
+ws.send(JSON.stringify(getChartMessage));
+```
+
+#### **Heartbeat API**
+
+```javascript
+// Send ping to server
+const pingMessage = {
+  type: 'ping'
+};
+
+ws.send(JSON.stringify(pingMessage));
+
+// Server responds with pong
+ws.onmessage = (event) => {
+  const message = JSON.parse(event.data);
+  if (message.type === 'pong') {
+    console.log('Server pong received:', message.data.timestamp);
+  }
+};
+```
+
+### **Response Message Types**
+
+#### **Connection Responses**
+
+```javascript
+// Connection established
+{
+  type: 'connection',
+  data: {
+    clientId: 'client_abc123_1234567890',
+    message: 'Connected to RAVO WebSocket Server',
+    serverTime: 1234567890123,
+    availableChannels: [
+      'all_events',
+      'token_creation', 
+      'token_trades',
+      'market_updates',
+      'migration_events',
+      'all_tokens',
+      'trending',
+      'recently_migrated'
+    ]
+  }
+}
+
+// Subscription success
+{
+  type: 'subscription_success',
+  data: {
+    channel: 'all_events',
+    message: 'Successfully subscribed to all_events'
+  }
+}
+
+// Unsubscription confirmation
+{
+  type: 'unsubscription_confirmed',
+  data: {
+    channel: 'all_events',
+    message: 'Unsubscribed from all_events'
+  }
+}
+```
+
+#### **Data Responses**
+
+```javascript
+// Tokens response
+{
+  type: 'tokens_response',
+  data: [
+    {
+      address: '0x1F2219162955396B9d5140d71d2C8832F5471253',
+      name: 'My Token',
+      symbol: 'MTK',
+      creator: '0x...',
+      bonding_curve: '0x...',
+      description: 'Token description',
+      migration_status: 'Live',
+      current_price: 0.0001,
+      market_cap: 10000,
+      volume_24h: 5000,
+      created_at: '2025-01-01T00:00:00.000Z'
+    }
+    // ... more tokens
+  ]
+}
+
+// Transactions response
+{
+  type: 'transactions_response',
+  data: [
+    {
+      hash: '0x...',
+      token_address: '0x1F2219162955396B9d5140d71d2C8832F5471253',
+      type: 'buy',
+      trader: '0x...',
+      amount: '1000.0',
+      value: '0.1',
+      timestamp: 1234567890,
+      block_number: 12345678
+    }
+    // ... more transactions
+  ]
+}
+
+// Chart response
+{
+  type: 'chart_response',
+  data: [
+    {
+      token_address: '0x1F2219162955396B9d5140d71d2C8832F5471253',
+      timeframe: '1h',
+      timestamp: 1234567890,
+      open: 0.0001,
+      high: 0.0002,
+      low: 0.00005,
+      close: 0.00015,
+      volume: 1000.0
+    }
+    // ... more candlestick data
+  ]
+}
+```
+
+### **Error Handling**
+
+```javascript
+// Error response
+{
+  type: 'error',
+  data: {
+    message: 'Rate limit exceeded'
+  }
+}
+
+// Handle errors
+ws.onmessage = (event) => {
+  const message = JSON.parse(event.data);
+  
+  if (message.type === 'error') {
+    console.error('WebSocket error:', message.data.message);
+    
+    switch (message.data.message) {
+      case 'Rate limit exceeded':
+        // Implement backoff strategy
+        setTimeout(() => {
+          ws.close();
+          ws = new WebSocket('wss://your-domain.ngrok.io');
+        }, 60000);
+        break;
+        
+      case 'Invalid message format':
+        console.error('Message format error - check your JSON');
+        break;
+        
+      default:
+        console.error('Unknown error:', message.data.message);
+    }
+  }
+};
+```
+
+### **Complete API Client Implementation**
+
+```javascript
+class RAVOApiClient {
+  constructor(wsUrl) {
+    this.wsUrl = wsUrl;
+    this.ws = null;
+    this.subscriptions = new Map();
+    this.messageHandlers = new Map();
+    this.isConnected = false;
+  }
+
+  async connect() {
+    return new Promise((resolve, reject) => {
+      this.ws = new WebSocket(this.wsUrl);
+      
+      this.ws.onopen = () => {
+        this.isConnected = true;
+        console.log('✅ Connected to RAVO API');
+        resolve();
+      };
+      
+      this.ws.onmessage = (event) => {
+        this.handleMessage(JSON.parse(event.data));
+      };
+      
+      this.ws.onclose = () => {
+        this.isConnected = false;
+        console.log('🔌 Disconnected from RAVO API');
+      };
+      
+      this.ws.onerror = (error) => {
+        console.error('❌ WebSocket error:', error);
+        reject(error);
+      };
+    });
+  }
+
+  handleMessage(message) {
+    const { type, data } = message;
+    
+    // Call registered handlers
+    if (this.messageHandlers.has(type)) {
+      this.messageHandlers.get(type).forEach(handler => {
+        handler(data);
+      });
+    }
+  }
+
+  onMessageType(type, handler) {
+    if (!this.messageHandlers.has(type)) {
+      this.messageHandlers.set(type, []);
+    }
+    this.messageHandlers.get(type).push(handler);
+  }
+
+  subscribe(channel, tokenAddress = null) {
+    if (!this.isConnected) {
+      throw new Error('Not connected to WebSocket');
+    }
+
+    const message = {
+      type: 'subscribe',
+      data: { channel, tokenAddress }
+    };
+
+    this.ws.send(JSON.stringify(message));
+    
+    const key = tokenAddress ? `${channel}_${tokenAddress}` : channel;
+    this.subscriptions.set(key, { channel, tokenAddress });
+  }
+
+  unsubscribe(channel, tokenAddress = null) {
+    if (!this.isConnected) return;
+
+    const message = {
+      type: 'unsubscribe',
+      data: { channel, tokenAddress }
+    };
+
+    this.ws.send(JSON.stringify(message));
+    
+    const key = tokenAddress ? `${channel}_${tokenAddress}` : channel;
+    this.subscriptions.delete(key);
+  }
+
+  getTokens(filter = 'all', limit = 50, offset = 0) {
+    if (!this.isConnected) {
+      throw new Error('Not connected to WebSocket');
+    }
+
+    const message = {
+      type: 'get_tokens',
+      data: { filter, limit, offset }
+    };
+
+    this.ws.send(JSON.stringify(message));
+  }
+
+  getTransactions(tokenAddress, limit = 50, offset = 0) {
+    if (!this.isConnected) {
+      throw new Error('Not connected to WebSocket');
+    }
+
+    const message = {
+      type: 'get_transactions',
+      data: { tokenAddress, limit, offset }
+    };
+
+    this.ws.send(JSON.stringify(message));
+  }
+
+  getChart(tokenAddress, timeframe = '1h', limit = 100) {
+    if (!this.isConnected) {
+      throw new Error('Not connected to WebSocket');
+    }
+
+    const message = {
+      type: 'get_chart',
+      data: { tokenAddress, timeframe, limit }
+    };
+
+    this.ws.send(JSON.stringify(message));
+  }
+
+  ping() {
+    if (!this.isConnected) return;
+
+    const message = { type: 'ping' };
+    this.ws.send(JSON.stringify(message));
+  }
+
+  disconnect() {
+    if (this.ws) {
+      this.ws.close();
+      this.isConnected = false;
+    }
+  }
+}
+
+// Usage example
+const apiClient = new RAVOApiClient('wss://your-domain.ngrok.io');
+
+// Connect and set up handlers
+await apiClient.connect();
+
+// Set up event handlers
+apiClient.onMessageType('tokens_response', (tokens) => {
+  console.log('Received tokens:', tokens);
+});
+
+apiClient.onMessageType('transactions_response', (transactions) => {
+  console.log('Received transactions:', transactions);
+});
+
+apiClient.onMessageType('chart_response', (chartData) => {
+  console.log('Received chart data:', chartData);
+});
+
+// Subscribe to real-time events
+apiClient.subscribe('all_events');
+
+// Request data
+apiClient.getTokens('active', 20, 0);
+apiClient.getTransactions('0x1F2219162955396B9d5140d71d2C8832F5471253', 50, 0);
+apiClient.getChart('0x1F2219162955396B9d5140d71d2C8832F5471253', '1h', 100);
+```
+
+---
+
+## 🔗 API Integration
+
+### **WebSocket API Endpoints**
+
+Based on your WebSocket server implementation, here are the available API endpoints:
+
+```javascript
+import { createClient } from '@database/client';
+
+const databaseUrl = process.env.NEXT_PUBLIC_DATABASE_URL;
+const databaseKey = process.env.NEXT_PUBLIC_DATABASE_ANON_KEY;
+
+const database = createClient(databaseUrl, databaseKey);
 
 // Get token list with real-time updates
 async function getTokens(options = {}) {
@@ -466,7 +1050,7 @@ async function getTokens(options = {}) {
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  const { data, error, count } = await supabase
+  const { data, error, count } = await database
     .from('tokens')
     .select('*', { count: 'exact' })
     .range(from, to)
@@ -484,7 +1068,7 @@ async function getTokens(options = {}) {
 
 // Get specific token with relationships
 async function getToken(tokenAddress) {
-  const { data, error } = await supabase
+  const { data, error } = await database
     .from('tokens')
     .select(`
       *,
@@ -501,7 +1085,7 @@ async function getToken(tokenAddress) {
 
 // Subscribe to real-time token updates
 function subscribeToTokenUpdates(tokenAddress, callback) {
-  const subscription = supabase
+  const subscription = database
     .channel(`token_${tokenAddress}`)
     .on(
       'postgres_changes',
@@ -532,7 +1116,7 @@ async function getTradeHistory(tokenAddress, options = {}) {
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  const { data, error } = await supabase
+  const { data, error } = await database
     .from('transactions')
     .select('*')
     .eq('token_address', tokenAddress)
@@ -544,20 +1128,20 @@ async function getTradeHistory(tokenAddress, options = {}) {
   return data;
 }
 
-### **Advanced Supabase Usage**
+### **Advanced Database Usage**
 
 ```javascript
 class RAVODataClient {
   constructor() {
-    this.supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    this.database = createClient(
+      process.env.NEXT_PUBLIC_DATABASE_URL,
+      process.env.NEXT_PUBLIC_DATABASE_ANON_KEY
     );
   }
 
   // Advanced token queries with filters
   async getFilteredTokens(filters = {}) {
-    let query = this.supabase.from('tokens').select('*');
+    let query = this.database.from('tokens').select('*');
 
     // Apply filters
     if (filters.symbol) {
@@ -590,7 +1174,7 @@ class RAVODataClient {
 
   // Real-time analytics subscription
   subscribeToAnalytics(tokenAddress, callback) {
-    const subscription = this.supabase
+    const subscription = this.database
       .channel(`analytics_${tokenAddress}`)
       .on(
         'postgres_changes',
@@ -611,7 +1195,7 @@ class RAVODataClient {
 
   // Batch operations for performance
   async batchUpdateTokenStats(updates) {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.database
       .from('token_stats')
       .upsert(updates, {
         onConflict: 'token_address',
@@ -627,7 +1211,7 @@ class RAVODataClient {
     const startTime = new Date();
     startTime.setHours(startTime.getHours() - parseInt(timeframe));
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.database
       .from('transactions')
       .select(`
         amount,
@@ -724,17 +1308,17 @@ try {
 
 ## 🌐 Real-Time Data Integration
 
-### **Supabase Real-Time Subscriptions**
+### **Real-Time Database Subscriptions**
 
 ```javascript
-import { createClient } from '@supabase/supabase-js';
-import { RealtimeChannel } from '@supabase/supabase-js';
+import { createClient } from '@database/client';
+import { RealtimeChannel } from '@database/client';
 
 class RAVORealtimeClient {
   constructor() {
-    this.supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    this.database = createClient(
+      process.env.NEXT_PUBLIC_DATABASE_URL,
+      process.env.NEXT_PUBLIC_DATABASE_ANON_KEY
     );
     this.subscriptions = new Map();
   }
@@ -743,7 +1327,7 @@ class RAVORealtimeClient {
   subscribeToTokenPrices(tokenAddress, callback) {
     const channelName = `token_price_${tokenAddress}`;
 
-    const channel = this.supabase
+    const channel = this.database
       .channel(channelName)
       .on(
         'postgres_changes',
@@ -774,7 +1358,7 @@ class RAVORealtimeClient {
   subscribeToTransactions(tokenAddress, callback) {
     const channelName = `transactions_${tokenAddress}`;
 
-    const channel = this.supabase
+    const channel = this.database
       .channel(channelName)
       .on(
         'postgres_changes',
@@ -803,7 +1387,7 @@ class RAVORealtimeClient {
   subscribeToMigrations(callback) {
     const channelName = 'migrations';
 
-    const channel = this.supabase
+    const channel = this.database
       .channel(channelName)
       .on(
         'postgres_changes',
@@ -849,7 +1433,7 @@ class RAVORealtimeClient {
   unsubscribe(channelName) {
     const channel = this.subscriptions.get(channelName);
     if (channel) {
-      this.supabase.removeChannel(channel);
+      this.database.removeChannel(channel);
       this.subscriptions.delete(channelName);
     }
   }
@@ -857,7 +1441,7 @@ class RAVORealtimeClient {
   // Unsubscribe from all channels
   unsubscribeAll() {
     for (const [channelName, channel] of this.subscriptions) {
-      this.supabase.removeChannel(channel);
+      this.database.removeChannel(channel);
     }
     this.subscriptions.clear();
   }
@@ -896,6 +1480,476 @@ const migrationSubscription = realtimeClient.subscribeToMigrations(
 // Cleanup when component unmounts
 function cleanup() {
   realtimeClient.unsubscribeAll();
+}
+```
+
+---
+
+## 📡 WebSocket Streams
+
+### **WebSocket Server Configuration**
+
+The RAVO WebSocket server provides real-time data streaming for all platform events. It's designed to handle 500k+ concurrent users with horizontal scaling support.
+
+#### **Connection Details**
+
+```javascript
+// WebSocket connection configuration
+const WS_CONFIG = {
+  // Local development
+  LOCAL_URL: 'ws://localhost:8080',
+  
+  // Production (with ngrok tunnel)
+  PRODUCTION_URL: 'wss://your-domain.ngrok.io',
+  
+  // Connection settings
+  RECONNECT_INTERVAL: 5000,
+  MAX_RECONNECT_ATTEMPTS: 10,
+  HEARTBEAT_INTERVAL: 30000,
+  CONNECTION_TIMEOUT: 300000
+};
+```
+
+#### **Available Channels**
+
+Based on your WebSocket server implementation, here are the supported channels:
+
+```javascript
+const CHANNELS = {
+  // Website-compatible channels (primary)
+  ALL_EVENTS: 'all_events',           // All platform events
+  TOKEN_CREATION: 'token_creation',   // New token creation events
+  TOKEN_TRADES: 'token_trades',       // Buy/sell transactions
+  MARKET_UPDATES: 'market_updates',   // Price and market data
+  MIGRATION_EVENTS: 'migration_events', // Token migration events
+  
+  // Legacy channels (backward compatibility)
+  ALL_TOKENS: 'all_tokens',           // All active tokens
+  TOKEN_SPECIFIC: 'token_',           // Token-specific data (append address)
+  TRENDING: 'trending',               // Trending tokens
+  RECENTLY_MIGRATED: 'recently_migrated', // Recently migrated tokens
+  TRANSACTIONS: 'transactions_',      // Token transactions (append address)
+  CHARTS: 'charts_',                  // Chart data (append address)
+  MARKET_STATUS: 'market_status_'     // Market status (append address)
+};
+```
+
+### **WebSocket Client Implementation**
+
+```javascript
+class RAVOWebSocketClient {
+  constructor(config = {}) {
+    this.config = { ...WS_CONFIG, ...config };
+    this.ws = null;
+    this.subscriptions = new Map();
+    this.reconnectAttempts = 0;
+    this.isConnected = false;
+    this.messageHandlers = new Map();
+  }
+
+  // Connect to WebSocket server
+  connect() {
+    return new Promise((resolve, reject) => {
+      try {
+        this.ws = new WebSocket(this.config.PRODUCTION_URL);
+        
+        this.ws.onopen = () => {
+          console.log('✅ Connected to RAVO WebSocket server');
+          this.isConnected = true;
+          this.reconnectAttempts = 0;
+          this.startHeartbeat();
+          resolve();
+        };
+
+        this.ws.onmessage = (event) => {
+          this.handleMessage(JSON.parse(event.data));
+        };
+
+        this.ws.onclose = (event) => {
+          console.log('🔌 WebSocket connection closed:', event.code, event.reason);
+          this.isConnected = false;
+          this.stopHeartbeat();
+          
+          if (!event.wasClean && this.reconnectAttempts < this.config.MAX_RECONNECT_ATTEMPTS) {
+            this.reconnect();
+          }
+        };
+
+        this.ws.onerror = (error) => {
+          console.error('❌ WebSocket error:', error);
+          reject(error);
+        };
+
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  // Subscribe to a channel
+  subscribe(channel, tokenAddress = null) {
+    if (!this.isConnected) {
+      throw new Error('WebSocket not connected');
+    }
+
+    const message = {
+      type: 'subscribe',
+      data: { channel, tokenAddress }
+    };
+
+    this.ws.send(JSON.stringify(message));
+    
+    // Store subscription for cleanup
+    const subscriptionKey = tokenAddress ? `${channel}_${tokenAddress}` : channel;
+    this.subscriptions.set(subscriptionKey, { channel, tokenAddress });
+    
+    console.log(`📡 Subscribed to ${channel}${tokenAddress ? ` (${tokenAddress})` : ''}`);
+  }
+
+  // Unsubscribe from a channel
+  unsubscribe(channel, tokenAddress = null) {
+    if (!this.isConnected) return;
+
+    const message = {
+      type: 'unsubscribe',
+      data: { channel, tokenAddress }
+    };
+
+    this.ws.send(JSON.stringify(message));
+    
+    const subscriptionKey = tokenAddress ? `${channel}_${tokenAddress}` : channel;
+    this.subscriptions.delete(subscriptionKey);
+    
+    console.log(`📡 Unsubscribed from ${channel}${tokenAddress ? ` (${tokenAddress})` : ''}`);
+  }
+
+  // Handle incoming messages
+  handleMessage(message) {
+    const { type, data } = message;
+    
+    // Call registered handlers
+    if (this.messageHandlers.has(type)) {
+      this.messageHandlers.get(type).forEach(handler => {
+        try {
+          handler(data);
+        } catch (error) {
+          console.error(`Error in message handler for ${type}:`, error);
+        }
+      });
+    }
+    
+    // Log message for debugging
+    console.log(`📨 Received ${type}:`, data);
+  }
+
+  // Register message handler
+  onMessageType(type, handler) {
+    if (!this.messageHandlers.has(type)) {
+      this.messageHandlers.set(type, []);
+    }
+    this.messageHandlers.get(type).push(handler);
+  }
+
+  // Send ping to server
+  ping() {
+    if (this.isConnected) {
+      this.ws.send(JSON.stringify({ type: 'ping' }));
+    }
+  }
+
+  // Start heartbeat
+  startHeartbeat() {
+    this.heartbeatInterval = setInterval(() => {
+      this.ping();
+    }, this.config.HEARTBEAT_INTERVAL);
+  }
+
+  // Stop heartbeat
+  stopHeartbeat() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+  }
+
+  // Reconnect logic
+  reconnect() {
+    this.reconnectAttempts++;
+    console.log(`🔄 Attempting to reconnect (${this.reconnectAttempts}/${this.config.MAX_RECONNECT_ATTEMPTS})...`);
+    
+    setTimeout(() => {
+      this.connect().catch(error => {
+        console.error('Reconnection failed:', error);
+      });
+    }, this.config.RECONNECT_INTERVAL);
+  }
+
+  // Disconnect
+  disconnect() {
+    if (this.ws) {
+      this.ws.close(1000, 'Client disconnect');
+      this.isConnected = false;
+      this.stopHeartbeat();
+    }
+  }
+}
+```
+
+### **Message Types and Data Formats**
+
+Based on your server implementation, here are the message types you'll receive:
+
+#### **Connection Messages**
+
+```javascript
+// Connection established
+{
+  type: 'connection',
+  data: {
+    clientId: 'client_abc123_1234567890',
+    message: 'Connected to RAVO WebSocket Server',
+    serverTime: 1234567890123,
+    availableChannels: ['all_events', 'token_creation', 'token_trades', ...]
+  }
+}
+
+// Subscription confirmation
+{
+  type: 'subscription_success',
+  data: {
+    channel: 'all_events',
+    message: 'Successfully subscribed to all_events'
+  }
+}
+
+// Pong response
+{
+  type: 'pong',
+  data: {
+    timestamp: 1234567890123
+  }
+}
+```
+
+#### **Token Events**
+
+```javascript
+// Token created
+{
+  type: 'token_created',
+  data: {
+    token: {
+      address: '0x...',
+      name: 'My Token',
+      symbol: 'MTK',
+      creator: '0x...',
+      bonding_curve: '0x...',
+      description: 'Token description',
+      // ... other token fields
+    },
+    tokenName: 'My Token',
+    tokenSymbol: 'MTK',
+    tokenAddress: '0x...',
+    creator: '0x...',
+    bondingCurve: '0x...',
+    description: 'Token description',
+    timestamp: 1234567890,
+    date: '2025-01-01T00:00:00.000Z'
+  }
+}
+
+// Token bought
+{
+  type: 'token_bought',
+  data: {
+    token_address: '0x...',
+    type: 'buy',
+    trader: '0x...',
+    formattedTrader: '0x1234...5678',
+    formattedBuyer: '0x1234...5678',
+    formattedSeller: '0x...',
+    tokenAmount: 1000.0,
+    ethAmount: 0.1,
+    tokenName: 'My Token',
+    tokenSymbol: 'MTK',
+    migration_status: 'Live',
+    timestamp: 1234567890,
+    date: '2025-01-01T00:00:00.000Z',
+    hash: '0x...',
+    blockNumber: 12345678
+  }
+}
+
+// Token sold
+{
+  type: 'token_sold',
+  data: {
+    // Same structure as token_bought but type: 'sell'
+  }
+}
+```
+
+#### **Market Data**
+
+```javascript
+// Market metrics update
+{
+  type: 'market_metrics_update',
+  data: {
+    token_address: '0x...',
+    tokenName: 'My Token',
+    tokenSymbol: 'MTK',
+    price: 0.0001,
+    marketCap: 10000.0,
+    progress: 0.25,
+    migration_status: 'Live',
+    timestamp: 1234567890,
+    date: '2025-01-01T00:00:00.000Z'
+  }
+}
+
+// Chart data update
+{
+  type: 'chart_update',
+  event: 'INSERT',
+  data: {
+    token_address: '0x...',
+    timeframe: '1h',
+    timestamp: 1234567890,
+    open: 0.0001,
+    high: 0.0002,
+    low: 0.00005,
+    close: 0.00015,
+    volume: 1000.0
+  }
+}
+```
+
+### **Usage Examples**
+
+```javascript
+// Initialize WebSocket client
+const wsClient = new RAVOWebSocketClient({
+  PRODUCTION_URL: 'wss://your-domain.ngrok.io'
+});
+
+// Connect and set up event handlers
+await wsClient.connect();
+
+// Subscribe to all events (recommended for most use cases)
+wsClient.subscribe('all_events');
+
+// Set up event handlers
+wsClient.onMessageType('token_created', (data) => {
+  console.log('New token created:', data.tokenName, data.tokenSymbol);
+  // Update your UI with new token
+  addTokenToList(data.token);
+});
+
+wsClient.onMessageType('token_bought', (data) => {
+  console.log('Token bought:', data.tokenName, data.tokenAmount);
+  // Update transaction feed
+  addTransactionToFeed(data);
+});
+
+wsClient.onMessageType('token_sold', (data) => {
+  console.log('Token sold:', data.tokenName, data.tokenAmount);
+  // Update transaction feed
+  addTransactionToFeed(data);
+});
+
+wsClient.onMessageType('market_metrics_update', (data) => {
+  console.log('Market update:', data.tokenName, data.price);
+  // Update price display
+  updateTokenPrice(data.token_address, data.price);
+});
+
+// Subscribe to specific token data
+const tokenAddress = '0x1F2219162955396B9d5140d71d2C8832F5471253';
+wsClient.subscribe('token', tokenAddress);
+wsClient.subscribe('transactions', tokenAddress);
+wsClient.subscribe('charts', tokenAddress);
+
+// Handle specific token events
+wsClient.onMessageType('token_data', (data) => {
+  console.log('Token data update:', data);
+});
+
+wsClient.onMessageType('transactions_data', (data) => {
+  console.log('Transaction data:', data);
+});
+
+wsClient.onMessageType('chart_response', (data) => {
+  console.log('Chart data:', data);
+});
+
+// Cleanup on component unmount
+function cleanup() {
+  wsClient.disconnect();
+}
+```
+
+### **Error Handling**
+
+```javascript
+// Handle connection errors
+wsClient.onMessageType('error', (data) => {
+  console.error('WebSocket error:', data.message);
+  
+  if (data.message === 'Rate limit exceeded') {
+    // Implement backoff strategy
+    setTimeout(() => {
+      wsClient.connect();
+    }, 60000); // Wait 1 minute
+  }
+});
+
+// Handle subscription errors
+wsClient.onMessageType('subscription_error', (data) => {
+  console.error('Subscription error:', data.message);
+  // Handle subscription failure
+});
+```
+
+### **Performance Optimization**
+
+```javascript
+// Batch message processing
+class MessageBatcher {
+  constructor(batchSize = 10, batchTimeout = 100) {
+    this.batchSize = batchSize;
+    this.batchTimeout = batchTimeout;
+    this.messageQueue = [];
+    this.batchTimer = null;
+  }
+
+  addMessage(message) {
+    this.messageQueue.push(message);
+    
+    if (this.messageQueue.length >= this.batchSize) {
+      this.processBatch();
+    } else if (!this.batchTimer) {
+      this.batchTimer = setTimeout(() => {
+        this.processBatch();
+      }, this.batchTimeout);
+    }
+  }
+
+  processBatch() {
+    if (this.messageQueue.length === 0) return;
+    
+    const batch = this.messageQueue.splice(0, this.batchSize);
+    
+    // Process batch of messages
+    batch.forEach(message => {
+      this.handleMessage(message);
+    });
+    
+    if (this.batchTimer) {
+      clearTimeout(this.batchTimer);
+      this.batchTimer = null;
+    }
+  }
 }
 ```
 
@@ -1262,90 +2316,6 @@ main()
 
 ---
 
-## 🔐 Formula Protection
-
-### **Intellectual Property Safeguards**
-
-**⚠️ CRITICAL SECURITY NOTICE**
-
-The RAVO bonding curve formula is proprietary technology protected by multiple layers of security:
-
-#### **1. Code Obfuscation**
-```javascript
-// Example of protected formula implementation
-function calculatePrice(supply, reserve) {
-  // Obfuscated calculation - DO NOT ATTEMPT TO REVERSE ENGINEER
-  const obfuscated = this.proprietaryAlgorithm(supply, reserve);
-
-  // Multi-layer encryption
-  const encrypted = this.encryptResult(obfuscated);
-
-  // Additional security layers
-  const secured = this.applySecurityLayers(encrypted);
-
-  return secured;
-}
-```
-
-#### **2. Access Control**
-- **Restricted Function Access**: Core calculations only accessible to authorized contracts
-- **IP Whitelisting**: Only verified addresses can interact with protected functions
-- **Runtime Validation**: Continuous validation of calling context
-
-#### **3. Legal Protections**
-- **Patent Protection**: Formula protected under international patent law
-- **Copyright Protection**: Code protected under copyright law
-- **Trade Secret Protection**: Algorithm details maintained as trade secrets
-
-### **Authorized Usage**
-
-#### **✅ Permitted Usage**
-```javascript
-// ✅ CORRECT: Use public estimation functions
-const estimatedTokens = await bondingCurve.estimateBuyTokens(ethAmount);
-const estimatedETH = await bondingCurve.estimateSellETH(tokenAmount);
-
-// ✅ CORRECT: Use public trading functions
-await bondingCurve.buyTokens(slippagePercent, { value: ethAmount });
-await bondingCurve.sellTokens(tokenAmount, slippagePercent);
-```
-
-#### **❌ Prohibited Usage**
-```javascript
-// ❌ INCORRECT: Attempting to access protected calculations
-const price = await bondingCurve.calculatePrice(supply, reserve); // Will fail
-
-// ❌ INCORRECT: Reverse engineering attempts
-const formula = bondingCurve.getFormula(); // Will fail
-
-// ❌ INCORRECT: Direct state manipulation
-await bondingCurve.setPriceCalculation(); // Will fail
-```
-
-### **Security Measures**
-
-#### **Runtime Protection**
-- **Function Visibility**: Core calculations marked as `internal` or `private`
-- **Access Modifiers**: Only authorized contracts can call protected functions
-- **State Validation**: Continuous validation of contract state integrity
-
-#### **Deployment Protection**
-- **Contract Verification**: Selective verification to protect IP
-- **Source Code Protection**: Critical sections not published
-- **Deployment Restrictions**: Only authorized deployments allowed
-
-### **Compliance & Ethics**
-
-#### **Legal Compliance**
-- All integrations must comply with applicable laws and regulations
-- Intellectual property rights must be respected
-- No attempts to circumvent protection measures
-
-#### **Ethical Usage**
-- Use the platform for legitimate token creation and trading
-- Respect other users' intellectual property
-- Contribute positively to the DeFi ecosystem
-
 ---
 
 ## 📞 Support & Resources
@@ -1353,7 +2323,7 @@ await bondingCurve.setPriceCalculation(); // Will fail
 ### **Developer Resources**
 
 - **📚 Documentation**: [docs.ravodapp.com](https://docs.ravodapp.com)
-- **💬 Discord**: [RAVO Developer Community](https://discord.gg/ravo)
+- **💬 Telegram**: [RAVO Community](https://t.me/Ravoeth) - Developer discussions
 - **🐛 GitHub**: [RAVO SDK](https://github.com/ravo-dapp/ravo-sdk)
 - **📧 Email**: dev@ravodapp.com
 
