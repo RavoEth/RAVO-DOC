@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![RAVO Logo](https://raw.githubusercontent.com/ravo-dapp/ravo-home-page/main/public/images/Ravologo.png)
+![RAVO Logo](https://red-additional-perch-964.mypinata.cloud/ipfs/bafybeigmejwloxoakapcstxqrbntziwznwsukirhydym5bet2vjloaa5ym)
 
 **Your Complete Guide to Token Creation and Trading on RAVO**
 
@@ -105,26 +105,22 @@ Once connected, you'll see:
 
 ### **What is a Bonding Curve?**
 
-A **Virtual Bonding Curve** is a mathematical algorithm that provides **instant liquidity** for token trading without requiring traditional liquidity pools.
+A **Virtual Bonding Curve** is a mathematical algorithm that provides **instant liquidity** for token trading without requiring traditional liquidity pools. RAVO uses a sophisticated bonding curve system that ensures fair price discovery and guaranteed liquidity.
 
-#### **How It Works**
+#### **How RAVO's Bonding Curve Works**
 
-```
-Price = Initial Price × (Current Supply / Initial Supply)^Exponent
-```
+RAVO's bonding curve system operates on mathematical principles that:
 
-**Visual Representation:**
+1. **Maintains Virtual Reserves**: ETH and token reserves that determine pricing
+2. **Ensures Price Discovery**: Price automatically adjusts based on trading activity
+3. **Guarantees Liquidity**: Mathematical guarantee that tokens can always be bought or sold
+4. **Enables Migration**: When threshold is reached, automatically migrates to Uniswap V2
 
-```
-ETH Reserve: 0.1 ETH
-Token Supply: 10,000 tokens
-Current Price: 0.01 ETH per token
-
-When someone buys 1,000 tokens:
-→ ETH Reserve: 0.11 ETH
-→ Token Supply: 11,000 tokens
-→ New Price: 0.011 ETH per token (10% increase)
-```
+**Key Features:**
+- **800M Token Supply**: Total supply available for trading on the bonding curve
+- **Custom Migration Threshold**: Creators set when to migrate to Uniswap
+- **Dynamic Pricing**: Price adjusts automatically with each trade
+- **Fee Distribution**: 50% to creator, 25% to platform, 25% to ecosystem
 
 ### **Key Benefits**
 
@@ -143,13 +139,18 @@ When someone buys 1,000 tokens:
 - **Equal Access**: No privileged investors
 - **Community Driven**: Success determined by community adoption
 
-### **Curve Types Available**
+#### **4. Custom Migration Control**
+- **Creator Control**: Set your own migration threshold
+- **Strategic Timing**: Choose when to graduate to Uniswap
+- **Automatic Process**: Seamless migration when threshold reached
 
-| **Curve Type** | **Description** | **Use Case** |
-|----------------|-----------------|--------------|
-| **Linear** | Steady price increase | Stable, predictable growth |
-| **Exponential** | Accelerated growth | High-growth potential projects |
-| **Custom** | Tailored parameters | Specialized tokenomics |
+### **Migration Process**
+
+| **Phase** | **Description** | **Benefits** |
+|-----------|-----------------|--------------|
+| **Bonding Curve** | Initial trading on virtual curve | Instant liquidity, fair pricing |
+| **Migration Trigger** | ETH balance reaches threshold | Automatic Uniswap integration |
+| **Uniswap V2** | Full DEX trading | Enhanced liquidity, broader exposure |
 
 ---
 
@@ -325,288 +326,13 @@ console.log(`Expected ETH: ${formatEther(estimatedETH)}`);
 
 ---
 
-## 📊 Portfolio Management
 
-### **Dashboard Overview**
 
-#### **Real-Time Metrics**
-- **Token Holdings**: Current balance across all tokens
-- **Portfolio Value**: Total value in ETH and USD
-- **Performance Charts**: Price and volume history
-- **Profit/Loss Tracking**: Detailed P&L analysis
 
-#### **Analytics Dashboard**
 
-**Price Analytics:**
-- Live price charts
-- 24h price change
-- Volume indicators
-- Market cap tracking
+## 💡 Words of Wisdom
 
-**Holder Analytics:**
-- Top holders list
-- Distribution analysis
-- New holders tracking
-- Holder growth metrics
-
-### **Portfolio Optimization**
-
-#### **Diversification Strategy**
-```json
-{
-  "conservative": {
-    "highCapTokens": "40%",
-    "midCapTokens": "35%",
-    "lowCapTokens": "25%"
-  },
-  "aggressive": {
-    "highCapTokens": "20%",
-    "midCapTokens": "30%",
-    "lowCapTokens": "50%"
-  }
-}
-```
-
-#### **Risk Assessment**
-- **Portfolio Allocation**: Diversification analysis
-- **Risk Score**: Overall portfolio risk level
-- **Correlation Matrix**: Token relationship analysis
-- **Volatility Metrics**: Price stability indicators
-
-### **Tax Reporting**
-
-#### **Transaction History**
-- **Complete Records**: All trades with timestamps
-- **Cost Basis**: Acquisition cost tracking
-- **Realized Gains**: Profit/loss calculations
-- **Export Functions**: CSV and PDF reports
-
----
-
-## 🛡️ Risk Management
-
-### **Understanding DeFi Risks**
-
-#### **Smart Contract Risks**
-- **Audit Status**: Regular security audits
-- **Code Review**: Community and professional review
-- **Emergency Controls**: Pause mechanisms for threats
-
-#### **Market Risks**
-- **Volatility**: Price fluctuations
-- **Liquidity**: Trading volume risks
-- **Manipulation**: Potential market manipulation
-
-#### **Operational Risks**
-- **Network Issues**: Ethereum network congestion
-- **Gas Costs**: Variable transaction fees
-- **Wallet Security**: Private key management
-
-### **Risk Mitigation Strategies**
-
-#### **1. Position Sizing**
-```json
-{
-  "conservative": "1-2% of portfolio per trade",
-  "moderate": "3-5% of portfolio per trade",
-  "aggressive": "5-10% of portfolio per trade"
-}
-```
-
-#### **2. Diversification**
-- **Token Variety**: Spread across different projects
-- **Sector Balance**: Different market sectors
-- **Time Distribution**: Staggered investments
-
-#### **3. Stop Loss Orders**
-```json
-{
-  "tight": "5-10% loss threshold",
-  "standard": "15-20% loss threshold",
-  "wide": "25-30% loss threshold"
-}
-```
-
-#### **4. Take Profit Levels**
-```json
-{
-  "conservative": "2x investment",
-  "moderate": "5x investment",
-  "aggressive": "10x+ investment"
-}
-```
-
-### **Security Best Practices**
-
-#### **Wallet Security**
-- **Hardware Wallet**: Use Ledger or Trezor for large amounts
-- **Seed Phrase**: Store securely offline
-- **Backup**: Multiple secure backups
-- **2FA**: Enable two-factor authentication
-
-#### **Transaction Security**
-- **Verify Addresses**: Always double-check contract addresses
-- **Gas Estimation**: Review gas costs before transactions
-- **Slippage Settings**: Appropriate slippage protection
-- **Test Transactions**: Small test trades first
-
----
-
-## 📈 Advanced Features
-
-### **Automated Trading**
-
-#### **Dollar-Cost Averaging (DCA)**
-```json
-{
-  "strategy": "DCA",
-  "frequency": "daily",
-  "amount": "0.01 ETH",
-  "slippage": "2%",
-  "targetToken": "0x..."
-}
-```
-
-#### **Limit Orders**
-```json
-{
-  "type": "limit_buy",
-  "tokenAddress": "0x...",
-  "targetPrice": "0.001 ETH",
-  "amount": "0.1 ETH",
-  "expiration": "30 days"
-}
-```
-
-#### **Stop Loss Orders**
-```json
-{
-  "type": "stop_loss",
-  "tokenAddress": "0x...",
-  "triggerPrice": "0.0005 ETH",
-  "sellPercentage": "100%",
-  "slippage": "5%"
-}
-```
-
-### **Analytics & Insights**
-
-#### **Real-Time Analytics**
-- **Price Action**: Live price charts and indicators
-- **Volume Analysis**: Trading volume and patterns
-- **Holder Distribution**: Token ownership breakdown
-- **Social Sentiment**: Community engagement metrics
-
-#### **Advanced Analytics**
-- **On-Chain Analysis**: Transaction flow visualization
-- **Market Correlation**: Performance vs major cryptocurrencies
-- **Liquidity Depth**: Available liquidity at different price levels
-- **Trading Patterns**: Optimal entry/exit point identification
-
-### **Migration System**
-
-#### **Automatic Migration**
-When your token reaches the migration threshold:
-
-1. **Trading Paused**: Temporary halt for migration
-2. **Uniswap Pool Created**: Automatic liquidity provision
-3. **Tokenomics Preserved**: Original curve parameters maintained
-4. **Trading Resumes**: Seamless continuation on Uniswap
-
-#### **Migration Benefits**
-- **Increased Liquidity**: Access to Uniswap's deep liquidity
-- **Enhanced Exposure**: Visibility to larger trader base
-- **Improved Efficiency**: Lower fees and better execution
-- **Market Maturity**: Transition to established AMM
-
----
-
-## 🎯 Best Practices for Success
-
-### **Token Launch Strategy**
-
-#### **Pre-Launch Preparation**
-- ✅ **Community Building**: Build hype before launch
-- ✅ **Content Creation**: High-quality marketing materials
-- ✅ **Partnerships**: Strategic collaborations
-- ✅ **Transparency**: Clear roadmap and communication
-
-#### **Launch Execution**
-- ✅ **Fair Launch**: No presale advantages
-- ✅ **Community Focus**: Engage with early supporters
-- ✅ **Regular Updates**: Keep community informed
-- ✅ **Problem Solving**: Address issues promptly
-
-#### **Post-Launch Growth**
-- ✅ **Marketing**: Continuous promotion efforts
-- ✅ **Community Management**: Active engagement
-- ✅ **Product Development**: Regular updates and improvements
-- ✅ **Partnership Expansion**: New collaborations and integrations
-
-### **Community Building**
-
-#### **Engagement Strategies**
-- **Telegram Community**: Active discussion and support
-- **Twitter/X Updates**: Regular announcements and engagement
-- **Discord Channels**: Technical discussions and AMAs
-- **Content Marketing**: Educational content and updates
-
-#### **Community Management**
-- **Response Time**: Quick responses to community queries
-- **Transparency**: Open communication about developments
-- **Incentives**: Community rewards and giveaways
-- **Feedback Integration**: Community input in development
-
-### **Marketing & Growth**
-
-#### **Content Strategy**
-```json
-{
-  "educational": "60%",
-  "promotional": "25%",
-  "community": "15%"
-}
-```
-
-#### **Growth Metrics**
-- **Community Size**: Telegram and Discord member growth
-- **Social Engagement**: Likes, shares, and interactions
-- **Website Traffic**: Unique visitors and page views
-- **Token Metrics**: Holder growth and trading volume
-
----
-
-## 🏆 Success Stories
-
-### **Featured Projects**
-
-#### **Project Alpha**
-- **Launch Date**: January 2024
-- **Migration Threshold**: 0.01 ETH
-- **Current Market Cap**: 500 ETH
-- **Community Size**: 10,000+ members
-- **Success Factors**: Strong community, consistent updates, strategic partnerships
-
-#### **Project Beta**
-- **Launch Date**: February 2024
-- **Migration Threshold**: 0.05 ETH
-- **Current Market Cap**: 200 ETH
-- **Community Size**: 5,000+ members
-- **Success Factors**: Innovative use case, viral marketing, dedicated team
-
-### **Lessons Learned**
-
-#### **Common Success Patterns**
-1. **Community First**: Build community before product
-2. **Consistent Communication**: Regular updates and transparency
-3. **Value Delivery**: Focus on delivering promised features
-4. **Strategic Partnerships**: Collaborate with complementary projects
-
-#### **Common Pitfalls**
-1. **Overpromising**: Unrealistic roadmap commitments
-2. **Poor Communication**: Lack of regular updates
-3. **Technical Issues**: Unresolved bugs and problems
-4. **Lack of Focus**: Trying to do too many things at once
+> "You don't need to know it all to begin. Take the first step. Embrace challenges, learn from your mistakes, improve, and try again. Stay resilient, and always remain open to suggestions."
 
 ---
 
@@ -617,7 +343,7 @@ When your token reaches the migration threshold:
 #### **Community Support**
 - **📱 Telegram**: [@ravodapp](https://t.me/Ravoeth) - Community discussions
 - **🐦 Twitter**: [@ravodapp](https://x.com/ravoecosystem) - Updates and support
-- **💬 Discord**: [RAVO Community](https://discord.gg/ravo) - Technical discussions
+- **💬 Telegram**: [RAVO Community](https://t.me/Ravoeth) - Community discussions
 
 #### **Documentation**
 - **📚 Full Documentation**: [docs.ravodapp.com](https://docs.ravodapp.com)
@@ -682,8 +408,8 @@ When your token reaches the migration threshold:
 <div style="display: flex; gap: 20px; justify-content: center; margin: 30px 0;">
 
 [![Launch DApp](https://img.shields.io/badge/🚀_Launch_DApp-0066CC?style=for-the-badge&logo=ethereum&logoColor=white)](https://this-is-ravo-final-website.vercel.app)
-[![Create Token](https://img.shields.io/badge/🎨_Create_Token-FF6B35?style=for-the-badge&logo=token&logoColor=white)](https://this-is-ravo-final-website.vercel.app/create)
-[![Join Community](https://img.shields.io/badge/🤝_Join_Community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/ravo)
+[![Create Token](https://img.shields.io/badge/🎨_Create_Token-FF6B35?style=for-the-badge&logo=token&logoColor=white)](https://this-is-ravo-final-website.vercel.app/create-token)
+[![Join Community](https://img.shields.io/badge/🤝_Join_Community-0088CC?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/Ravoeth)
 
 </div>
 

@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![RAVO Logo](https://raw.githubusercontent.com/ravo-dapp/ravo-home-page/main/public/images/Ravologo.png)
+![RAVO Logo](https://red-additional-perch-964.mypinata.cloud/ipfs/bafybeigmejwloxoakapcstxqrbntziwznwsukirhydym5bet2vjloaa5ym)
 
 **Complete Technical Reference for RAVO Smart Contracts**
 
@@ -269,19 +269,7 @@ function initialize(
 - `_rfeeAddress`: Fee recipient address
 
 **Initialization Logic:**
-```javascript
-// Set virtual reserves: r_x0_eth = (6 * migrationThreshold) / 17
-uint256 r_x0_eth = (6 * _migrationThreshold) / 17;
-virtualEthReserve = r_x0_eth;
-
-// Calculate virtual token reserve
-uint256 numerator = TOTAL_SUPPLY_FOR_SALE * (r_x0_eth + _migrationThreshold);
-virtualTokenReserve = numerator / _migrationThreshold;
-
-// Calculate k constant
-(k, success) = SafeMath.tryMul(virtualEthReserve, virtualTokenReserve);
-require(success, "Overflow in k calculation");
-```
+The bonding curve is initialized with mathematical parameters that ensure proper price discovery and liquidity provision.
 
 #### **buyTokens()**
 
@@ -304,18 +292,7 @@ function buyTokens(uint256 slippagePercent) external payable returns (uint256)
 7. **Migration Check**: Trigger migration if threshold reached
 
 **Mathematical Formula:**
-```javascript
-// Buy calculation
-uint256 feeAmount = (msg.value * platformFee) / 10000;
-uint256 netEth = msg.value - feeAmount;
-
-// Update virtual reserves
-uint256 newVirtualEthReserve = virtualEthReserve + netEth;
-uint256 newVirtualTokenReserve = k / newVirtualEthReserve;
-
-// Calculate tokens bought
-uint256 tokensBought = virtualTokenReserve - newVirtualTokenReserve;
-```
+The buy function calculates tokens to be received based on the current bonding curve state and applies platform fees.
 
 #### **sellTokens()**
 
@@ -339,16 +316,7 @@ function sellTokens(uint256 tokenAmount, uint256 slippagePercent) external
 7. **Update Reserves**: Adjust virtual reserves
 
 **Mathematical Formula:**
-```javascript
-// Sell calculation
-uint256 newVirtualTokenReserve = virtualTokenReserve + tokenAmount;
-uint256 newVirtualEthReserve = k / newVirtualTokenReserve;
-
-// Calculate ETH received
-uint256 grossEth = virtualEthReserve - newVirtualEthReserve;
-uint256 feeAmount = (grossEth * platformFee) / 10000;
-uint256 netEth = grossEth - feeAmount;
-```
+The sell function calculates ETH to be received based on the current bonding curve state and applies platform fees.
 
 ### **Estimation Functions**
 
@@ -383,9 +351,7 @@ function getTokenPrice() public view returns (uint256)
 **Returns:** Current price in wei (18 decimals)
 
 **Formula:**
-```javascript
-return (virtualEthReserve * 1e18) / virtualTokenReserve;
-```
+Returns the current token price based on the bonding curve state.
 
 ### **Migration System**
 
@@ -761,18 +727,10 @@ require(spender != address(0), "Invalid spender");
 ### **Overflow Protection**
 
 #### **SafeMath Usage**
-```javascript
-// Using OpenZeppelin SafeMath for all calculations
-uint256 newVirtualEthReserve = SafeMath.add(virtualEthReserve, netEth);
-uint256 newVirtualTokenReserve = SafeMath.div(k, newVirtualEthReserve);
-uint256 tokensBought = SafeMath.sub(virtualTokenReserve, newVirtualTokenReserve);
-```
+All mathematical operations use OpenZeppelin SafeMath to prevent overflow and underflow issues.
 
 #### **Explicit Overflow Checks**
-```javascript
-(bool success, uint256 kValue) = SafeMath.tryMul(virtualEthReserve, virtualTokenReserve);
-require(success, "Overflow in k calculation");
-```
+The contract includes explicit overflow checks for critical calculations to ensure mathematical integrity.
 
 ### **Reentrancy Protection**
 
@@ -782,14 +740,9 @@ function buyTokens(uint256 slippagePercent) external payable nonReentrant return
 function sellTokens(uint256 tokenAmount, uint256 slippagePercent) public nonReentrant
 ```
 
-### **Emergency Controls**
+### **Admin Controls**
 
-#### **Circuit Breakers**
-- Migration pause mechanism
-- Trading activation controls
-- Emergency withdrawal functions
-
-#### **Admin Controls**
+#### **Fee Management**
 - Fee parameter updates
 - Threshold adjustments
 - Owner transfer capabilities
@@ -833,12 +786,7 @@ mapping(address => mapping(address => uint256)) public allowance;
 ### **Computational Optimization**
 
 #### **Batch Operations**
-```javascript
-// Single update for multiple state changes
-totalTokensSold = SafeMath.add(totalTokensSold, tokensBought);
-virtualEthReserve = newVirtualEthReserve;
-virtualTokenReserve = newVirtualTokenReserve;
-```
+State variables are updated atomically to maintain consistency across all operations.
 
 #### **Cached Calculations**
 ```javascript
@@ -914,13 +862,7 @@ function getMigrationStatus() public view returns (bool, bool, bool)
 ```
 
 #### **Reserve Information**
-```javascript
-function getReserves() public view returns (
-    uint256 virtualEthReserve,
-    uint256 virtualTokenReserve,
-    uint256 k
-)
-```
+Returns the current bonding curve reserve information for external monitoring.
 
 ---
 

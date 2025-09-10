@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![RAVO Logo](https://raw.githubusercontent.com/ravo-dapp/ravo-home-page/main/public/images/Ravologo.png)
+![RAVO Logo](https://red-additional-perch-964.mypinata.cloud/ipfs/bafybeigmejwloxoakapcstxqrbntziwznwsukirhydym5bet2vjloaa5ym)
 
 **Revolutionary Virtual Bonding Curve System for DeFi Token Creation and Trading**
 
@@ -23,10 +23,7 @@ This comprehensive documentation provides detailed information for developers, i
 | **For Investors & Users** | **For Developers** | **Technical Docs** |
 |---------------------------|-------------------|-------------------|
 | [🚀 Getting Started](./investor/getting-started.md) | [⚡ Developer Guide](./developer/integration.md) | [🔧 Smart Contracts](./technical/contracts.md) |
-| [💰 Token Economics](./investor/economics.md) | [🛠️ API Reference](./developer/api.md) | [⚙️ Architecture](./technical/architecture.md) |
-| [📊 Trading Guide](./investor/trading.md) | [🔐 Security](./developer/security.md) | [📈 Analytics](./technical/analytics.md) |
-| [🔄 Migration System](./investor/migration.md) | [🧪 Testing](./developer/testing.md) | [📊 Monitoring](./technical/monitoring.md) |
-| [💡 Best Practices](./investor/best-practices.md) | [🚀 Deployment](./developer/deployment.md) | [🔍 Troubleshooting](./technical/troubleshooting.md) |
+| [💰 Token Economics](./investor/economics.md) | | [🔍 Troubleshooting](./technical/troubleshooting.md) |
 
 ---
 
@@ -48,9 +45,8 @@ This comprehensive documentation provides detailed information for developers, i
 - **Enhanced Exposure**: Access to Uniswap's vast liquidity network
 
 ### 📊 **Real-Time Analytics**
-- **Live Monitoring**: Real-time price charts and transaction tracking
-- **Database Integration**: Supabase-powered analytics and data storage
-- **Real-time Updates**: Live price feeds and market data via Supabase Real-time
+- **Database Integration**: Analytics and data storage
+- **Real-time Updates**: Live price feeds and market data via WebSocket streams
 - **Performance Metrics**: Trading volume, holder distribution, and market analysis
 
 ---
@@ -63,7 +59,7 @@ graph TB
         WEB[React Web App]
         WAGMI[wagmi Web3]
         WS_CLIENT[WebSocket Client]
-        SUPABASE[Supabase Client]
+        DB_CLIENT[Database Client]
     end
 
     subgraph "Smart Contract Layer"
@@ -75,14 +71,14 @@ graph TB
 
     subgraph "Infrastructure Layer"
         IDX[Blockchain Indexer]
-        SUPABASE[(Supabase)]
+        DATABASE[(Database)]
         WS_SERV[WebSocket Server]
         MON[Health Monitoring]
     end
 
     WEB --> WAGMI
     WEB --> WS_CLIENT
-    WEB --> SUPABASE
+    WEB --> DB_CLIENT
     WAGMI --> TF
     WAGMI --> BC
     WAGMI --> TKN
@@ -90,7 +86,7 @@ graph TB
     IDX --> TF
     IDX --> BC
     IDX --> TKN
-    IDX --> SUPABASE
+    IDX --> DATABASE
     MON --> IDX
 ```
 
@@ -117,6 +113,81 @@ RAVO operates on a transparent **3-way fee distribution**:
 | **RAVO Platform** | 25% | Platform maintenance and innovation |
 | **Buyback & Partnerships** | 25% | Ecosystem expansion and token value |
 
+### **🎯 Custom Migration Threshold - RAVO's Key Innovation**
+
+One of RAVO's most important features is the **Custom Migration Threshold** system:
+
+#### **What is Migration Threshold?**
+- **Definition**: The amount of ETH that must accumulate in the bonding curve before automatic migration to Uniswap V2
+- **Minimum Value**: 0.00019 ETH (enforced by smart contract)
+- **Creator Control**: Token creators can set their own threshold above the minimum
+- **Migration Trigger**: When the bonding curve reaches this threshold, it automatically migrates to Uniswap
+
+#### **Why This Matters**
+- **🎯 Strategic Control**: Creators can choose when their token graduates to Uniswap
+- **📈 Market Timing**: Set thresholds based on market conditions and project goals
+- **💰 Liquidity Management**: Control the amount of liquidity before Uniswap migration
+- **🚀 Growth Strategy**: Lower thresholds for faster Uniswap access, higher for more bonding curve trading
+
+#### **Migration Threshold Examples**
+```javascript
+// Conservative approach - more bonding curve trading
+parseEther("0.01")  // 0.01 ETH threshold
+
+// Balanced approach - moderate threshold  
+parseEther("0.005") // 0.005 ETH threshold
+
+// Aggressive approach - quick Uniswap migration
+parseEther("0.001") // 0.001 ETH threshold (close to minimum)
+```
+
+#### **Migration Process**
+1. **Bonding Curve Phase**: Token trades on virtual bonding curve
+2. **Threshold Reached**: ETH balance reaches custom migration threshold
+3. **Automatic Migration**: Smart contract migrates to Uniswap V2
+4. **Liquidity Provision**: All ETH and tokens become Uniswap liquidity
+5. **Uniswap Trading**: Token now trades on Uniswap with full DEX exposure
+
+### **🚀 Custom Launch Time Feature**
+
+Token creators can set a custom launch time for their tokens, providing strategic control over when trading begins.
+
+#### **Launch Time Options**
+- **Immediate Launch**: Set `launchTimestamp` to `0` for instant trading
+- **Scheduled Launch**: Set future timestamp for delayed trading activation
+- **Owner Override**: Token owner can open trading early if needed
+
+#### **Launch Time Examples**
+```javascript
+// Immediate launch (trading starts right away)
+const immediateLaunch = 0;
+
+// Launch in 24 hours
+const launchIn24h = Math.floor(Date.now() / 1000) + (24 * 60 * 60);
+
+// Launch on specific date (e.g., January 1, 2025)
+const specificDate = new Date('2025-01-01T00:00:00Z').getTime() / 1000;
+
+// Create token with custom launch time
+const tx = await factory.createToken(
+  "MyToken",
+  "MTK",
+  "https://t.me/mytoken",
+  "https://mytoken.com",
+  "https://x.com/mytoken",
+  "My awesome project",
+  parseEther("0.005"), // migration threshold
+  parseEther("0.1"),   // initial buy amount
+  launchIn24h          // custom launch time
+);
+```
+
+#### **Launch Time Benefits**
+- **🎯 Strategic Timing**: Launch during optimal market conditions
+- **📢 Marketing Preparation**: Time to build community before trading
+- **⏰ Coordinated Launch**: Synchronize with marketing campaigns
+- **🔄 Flexibility**: Owner can open trading early if needed
+
 ---
 
 ## 🔒 Security & Trust
@@ -124,9 +195,8 @@ RAVO operates on a transparent **3-way fee distribution**:
 ### **Multi-Layer Security Architecture**
 
 - **Smart Contract Audits**: Regular security audits by leading firms
-- **Code Obfuscation**: Protected intellectual property and algorithms
+- **Code Security**: Advanced security protocols and encryption
 - **Access Control**: Granular permission systems
-- **Emergency Controls**: Circuit breakers and pause mechanisms
 
 ### **Transparency Features**
 
@@ -137,54 +207,43 @@ RAVO operates on a transparent **3-way fee distribution**:
 
 ---
 
-## 🚀 Quick Start for Developers
+## 🚀 Creating Tokens with RAVO
 
-### **Prerequisites**
-
-```bash
-# Required tools
-Node.js >= 18.0.0
-npm or yarn
-Git
-MetaMask or compatible Web3 wallet
-```
-
-### **Installation**
-
-```bash
-# Clone the repository
-git clone https://github.com/ravo-dapp/ravo-platform.git
-cd ravo-platform
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your configuration
-
-# Start development server
-npm run dev
-```
-
-### **Smart Contract Interaction**
+### **Smart Contract Integration**
 
 ```javascript
 // Connect to RAVO Token Factory
 const factory = new ethers.Contract(FACTORY_ADDRESS, FACTORY_ABI, signer);
 
-// Create a new token
+// Create a new token with custom migration threshold
 const tx = await factory.createToken(
-  "MyToken",      // name
-  "MTK",          // symbol
-  "",             // telegram
-  "https://mytoken.com", // website
-  "",             // twitter
-  "My awesome project", // description
-  parseEther("0.005"), // migration threshold
-  parseEther("0.1"),   // initial buy amount
-  0                    // launch timestamp
+  "MyToken",                    // name
+  "MTK",                        // symbol
+  "https://t.me/mytoken",       // telegram
+  "https://mytoken.com",        // website
+  "https://x.com/mytoken",      // twitter
+  "My awesome project",         // description
+  parseEther("0.005"),         // migration threshold (custom!)
+  parseEther("0.1"),           // initial buy amount
+  0                            // launch timestamp (0 = immediate)
 );
+
+// Wait for transaction confirmation
+const receipt = await tx.wait();
+
+// Parse TokenCreated event to get addresses
+const tokenCreatedEvent = receipt.events.find(
+  event => event.event === 'TokenCreated'
+);
+
+if (tokenCreatedEvent) {
+  const { token, bondingCurve, creator } = tokenCreatedEvent.args;
+  console.log('Token created:', {
+    tokenAddress: token,
+    bondingCurveAddress: bondingCurve,
+    creator: creator
+  });
+}
 ```
 
 ---
@@ -249,7 +308,7 @@ ws.onmessage = (event) => {
 
 - **📱 Telegram**: [@ravodapp](https://t.me/Ravoeth) - Community discussions and support
 - **🐦 Twitter**: [@ravodapp](https://x.com/ravoecosystem) - Latest updates and announcements
-- **💬 Discord**: [RAVO Community](https://discord.gg/ravo) - Technical discussions and AMA
+- **💬 Telegram**: [RAVO Community](https://t.me/Ravoeth) - Community discussions and updates
 - **📧 Email**: info@ravodapp.com - Business inquiries and partnerships
 - **📚 Documentation**: [docs.ravodapp.com](https://docs.ravodapp.com) - Complete technical documentation
 
@@ -257,7 +316,7 @@ ws.onmessage = (event) => {
 
 #### **Community Support**
 - **Telegram Group**: Instant community help
-- **Discord Channels**: Specialized technical support
+- **X (Twitter)**: [RAVO Ecosystem](https://x.com/ravoecosystem) - Latest updates and announcements
 - **GitHub Issues**: Bug reports and feature requests
 
 #### **Professional Support**
@@ -287,43 +346,20 @@ ws.onmessage = (event) => {
 - [ ] Automated trading bots
 - [ ] Cross-chain bridge implementation
 - [ ] Advanced DeFi integrations
-- [ ] NFT marketplace integration
 
-### **🌟 Phase 4: Innovation (Q2 2025)**
+### **🌟 Phase 4: Innovation (Q2 2026)**
 - [ ] AI-powered trading strategies
 - [ ] Decentralized governance
 - [ ] Multi-chain deployment
 - [ ] Institutional-grade features
 - [ ] Global expansion initiatives
 
-### **🚀 Phase 5: Domination (Q3 2025)**
+### **🚀 Phase 5: Domination (Q3 2026)**
 - [ ] RAVO V3 launch with revolutionary features
 - [ ] Complete multi-chain ecosystem
 - [ ] Institutional partnerships
 - [ ] Global regulatory compliance
 - [ ] Mass adoption campaigns
-
----
-
-## ⚠️ Important Security Notice
-
-### **Formula Protection**
-
-**The RAVO bonding curve formula is proprietary technology protected by:**
-- Code obfuscation and encryption
-- Intellectual property safeguards
-- Multi-layer security protocols
-- Restricted access controls
-
-**⚠️ WARNING**: Attempting to reverse-engineer or copy the bonding curve formula violates intellectual property laws and may result in legal action.
-
-### **Security Best Practices**
-
-1. **Never share private keys**
-2. **Verify contract addresses** before interaction
-3. **Use hardware wallets** for large amounts
-4. **Enable 2FA** on all accounts
-5. **Keep software updated** to latest versions
 
 ---
 
@@ -336,8 +372,8 @@ ws.onmessage = (event) => {
 <div style="display: flex; gap: 20px; justify-content: center; margin: 30px 0;">
 
 [![Launch DApp](https://img.shields.io/badge/🚀_Launch_DApp-0066CC?style=for-the-badge&logo=ethereum&logoColor=white)](https://this-is-ravo-final-website.vercel.app)
-[![Create Token](https://img.shields.io/badge/🎨_Create_Token-FF6B35?style=for-the-badge&logo=token&logoColor=white)](https://this-is-ravo-final-website.vercel.app/create)
-[![Join Community](https://img.shields.io/badge/🤝_Join_Community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/ravo)
+[![Create Token](https://img.shields.io/badge/🎨_Create_Token-FF6B35?style=for-the-badge&logo=token&logoColor=white)](https://this-is-ravo-final-website.vercel.app/create-token)
+[![Join Community](https://img.shields.io/badge/🤝_Join_Community-0088CC?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/Ravoeth)
 
 </div>
 

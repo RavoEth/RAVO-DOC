@@ -506,7 +506,7 @@ A: Yes, our smart contracts undergo regular security audits by leading firms in 
 - [ ] Automated trading bots
 - [ ] Cross-chain bridge implementation
 - [ ] Advanced DeFi integrations
-- [ ] NFT marketplace integration
+
 
 ### 🌟 Phase 4: Innovation (Q2 2025)
 - [ ] AI-powered trading strategies
@@ -530,7 +530,7 @@ A: Yes, our smart contracts undergo regular security audits by leading firms in 
 
 - **📱 Telegram**: [@ravodapp](https://t.me/Ravoeth) - Community discussions and support
 - **🐦 Twitter**: [@ravodapp](https://x.com/ravoecosystem) - Latest updates and announcements
-- **💬 Discord**: [RAVO Community](https://discord.gg/ravo) - Technical discussions and AMA
+- **💬 Telegram**: [RAVO Community](https://t.me/Ravoeth) - Community discussions and updates
 - **📧 Email**: info@ravodapp.com - Business inquiries and partnerships
 - **📚 Documentation**: [docs.ravodapp.com](https://docs.ravodapp.com) - Complete technical documentation
 
@@ -538,7 +538,7 @@ A: Yes, our smart contracts undergo regular security audits by leading firms in 
 
 #### Community Support
 - **Telegram Group**: Instant community help
-- **Discord Channels**: Specialized technical support
+- **X (Twitter)**: [RAVO Ecosystem](https://x.com/ravoecosystem) - Latest updates and announcements
 - **GitHub Issues**: Bug reports and feature requests
 
 #### Professional Support
@@ -575,8 +575,8 @@ Help us secure the platform and earn rewards:
 <div style="display: flex; gap: 20px; justify-content: center; margin: 30px 0;">
 
 [![Launch DApp](https://img.shields.io/badge/🚀_Launch_DApp-0066CC?style=for-the-badge&logo=ethereum&logoColor=white)](https://this-is-ravo-final-website.vercel.app)
-[![Create Token](https://img.shields.io/badge/🎨_Create_Token-FF6B35?style=for-the-badge&logo=token&logoColor=white)](https://this-is-ravo-final-website.vercel.app/create)
-[![Join Community](https://img.shields.io/badge/🤝_Join_Community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/ravo)
+[![Create Token](https://img.shields.io/badge/🎨_Create_Token-FF6B35?style=for-the-badge&logo=token&logoColor=white)](https://this-is-ravo-final-website.vercel.app/create-token)
+[![Join Community](https://img.shields.io/badge/🤝_Join_Community-0088CC?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/Ravoeth)
 
 </div>
 

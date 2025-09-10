@@ -343,7 +343,7 @@ Read now: https://your-space.gitbook.io/ravo-protocol/
 
 #### **Developer Community Sharing**
 - **GitHub README**: Add documentation link
-- **Discord**: Share in developer channels
+- **Telegram**: Share in community channels
 - **Telegram**: Post in community groups
 - **Twitter**: Announce to followers
 
