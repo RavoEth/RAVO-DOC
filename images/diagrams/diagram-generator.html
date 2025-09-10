@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAVO Protocol Diagrams</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .diagram {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .diagram-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+            max-width: 800px;
+            display: block;
+            margin: 0 auto;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        .download-btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; font-size: 36px; margin-bottom: 40px;">
+            🚀 RAVO Protocol Architecture Diagrams
+        </h1>
+
+        <div style="text-align: center; margin-bottom: 20px; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px;">
+            <h2 style="color: #4ecdc4; margin: 0 0 10px 0;">Actual Technology Stack</h2>
+            <p style="color: white; margin: 0; font-size: 14px;">
+                <strong>Frontend:</strong> React 18 + TypeScript + Vite<br>
+                <strong>Web3:</strong> wagmi + viem + Reown (WalletConnect)<br>
+                <strong>Database:</strong> Supabase (PostgreSQL + Real-time)<br>
+                <strong>Contracts:</strong> Sepolia Testnet (0x1F2219162955396B9d5140d71d2C8832F5471253)
+            </p>
+        </div>
+
+        <!-- System Architecture Diagram -->
+        <div class="diagram">
+            <div class="diagram-title">🏗️ RAVO System Architecture (Actual Implementation)</div>
+            <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background -->
+                <defs>
+                    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.1" />
+                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.1" />
+                    </linearGradient>
+                </defs>
+                <rect width="800" height="600" fill="url(#bg)" rx="15"/>
+
+                <!-- User Interface Layer -->
+                <g transform="translate(50, 50)">
+                    <rect width="700" height="120" fill="rgba(255,255,255,0.1)" stroke="#4ecdc4" stroke-width="2" rx="10"/>
+                    <text x="350" y="25" text-anchor="middle" fill="#4ecdc4" font-size="16" font-weight="bold">User Interface Layer</text>
+
+                    <!-- UI Components -->
+                    <rect x="50" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#4ecdc4" stroke-width="1" rx="5"/>
+                    <text x="110" y="70" text-anchor="middle" fill="white" font-size="12">Web App</text>
+
+                    <rect x="200" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#4ecdc4" stroke-width="1" rx="5"/>
+                    <text x="260" y="65" text-anchor="middle" fill="white" font-size="12">wagmi Web3</text>
+                    <text x="260" y="80" text-anchor="middle" fill="white" font-size="10">Provider</text>
+
+                    <rect x="350" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#4ecdc4" stroke-width="1" rx="5"/>
+                    <text x="410" y="65" text-anchor="middle" fill="white" font-size="12">Supabase</text>
+                    <text x="410" y="80" text-anchor="middle" fill="white" font-size="10">Client</text>
+
+                    <rect x="500" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#4ecdc4" stroke-width="1" rx="5"/>
+                    <text x="560" y="65" text-anchor="middle" fill="white" font-size="12">Real-time</text>
+                    <text x="560" y="80" text-anchor="middle" fill="white" font-size="10">Updates</text>
+                </g>
+
+                <!-- Connection Lines -->
+                <path d="M 400 170 L 400 220" stroke="#4ecdc4" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+                <!-- Smart Contract Layer -->
+                <g transform="translate(50, 200)">
+                    <rect width="700" height="120" fill="rgba(255,255,255,0.1)" stroke="#ff6b6b" stroke-width="2" rx="10"/>
+                    <text x="350" y="25" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">Smart Contract Layer</text>
+
+                    <rect x="50" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#ff6b6b" stroke-width="1" rx="5"/>
+                    <text x="110" y="70" text-anchor="middle" fill="white" font-size="12">Token Factory</text>
+
+                    <rect x="200" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#ff6b6b" stroke-width="1" rx="5"/>
+                    <text x="260" y="70" text-anchor="middle" fill="white" font-size="12">Bonding Curve</text>
+
+                    <rect x="350" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#ff6b6b" stroke-width="1" rx="5"/>
+                    <text x="410" y="70" text-anchor="middle" fill="white" font-size="12">ERC-20 Token</text>
+
+                    <rect x="500" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#ff6b6b" stroke-width="1" rx="5"/>
+                    <text x="560" y="70" text-anchor="middle" fill="white" font-size="12">Migration</text>
+                </g>
+
+                <!-- Connection Lines -->
+                <path d="M 400 320 L 400 370" stroke="#ff6b6b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+                <!-- Infrastructure Layer -->
+                <g transform="translate(50, 350)">
+                    <rect width="700" height="120" fill="rgba(255,255,255,0.1)" stroke="#ffd93d" stroke-width="2" rx="10"/>
+                    <text x="350" y="25" text-anchor="middle" fill="#ffd93d" font-size="16" font-weight="bold">Infrastructure Layer</text>
+
+                    <rect x="50" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#ffd93d" stroke-width="1" rx="5"/>
+                    <text x="110" y="70" text-anchor="middle" fill="white" font-size="12">Blockchain</text>
+                    <text x="110" y="85" text-anchor="middle" fill="white" font-size="10">Indexer</text>
+
+                    <rect x="200" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#ffd93d" stroke-width="1" rx="5"/>
+                    <text x="260" y="70" text-anchor="middle" fill="white" font-size="12">Supabase</text>
+                    <text x="260" y="85" text-anchor="middle" fill="white" font-size="10">PostgreSQL</text>
+
+                    <rect x="350" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#ffd93d" stroke-width="1" rx="5"/>
+                    <text x="410" y="70" text-anchor="middle" fill="white" font-size="12">Real-time</text>
+                    <text x="410" y="85" text-anchor="middle" fill="white" font-size="10">Engine</text>
+
+                    <rect x="500" y="40" width="120" height="60" fill="rgba(255,255,255,0.2)" stroke="#ffd93d" stroke-width="1" rx="5"/>
+                    <text x="560" y="70" text-anchor="middle" fill="white" font-size="12">Monitoring</text>
+                    <text x="560" y="85" text-anchor="middle" fill="white" font-size="10">Prometheus</text>
+                </g>
+
+                <!-- Arrow marker -->
+                <defs>
+                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#4ecdc4"/>
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+
+        <!-- Bonding Curve Diagram -->
+        <div class="diagram">
+            <div class="diagram-title">📈 Virtual Bonding Curve</div>
+            <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background -->
+                <rect width="800" height="500" fill="rgba(255,255,255,0.05)" rx="15"/>
+
+                <!-- Grid lines -->
+                <g stroke="rgba(255,255,255,0.1)" stroke-width="1">
+                    <line x1="50" y1="50" x2="50" y2="450"/>
+                    <line x1="50" y1="450" x2="750" y2="450"/>
+                    <!-- Horizontal grid -->
+                    <line x1="50" y1="350" x2="750" y2="350"/>
+                    <line x1="50" y1="250" x2="750" y2="250"/>
+                    <line x1="50" y1="150" x2="750" y2="150"/>
+                    <!-- Vertical grid -->
+                    <line x1="150" y1="50" x2="150" y2="450"/>
+                    <line x1="250" y1="50" x2="250" y2="450"/>
+                    <line x1="350" y1="50" x2="350" y2="450"/>
+                    <line x1="450" y1="50" x2="450" y2="450"/>
+                    <line x1="550" y1="50" x2="550" y2="450"/>
+                    <line x1="650" y1="50" x2="650" y2="450"/>
+                </g>
+
+                <!-- Axes labels -->
+                <text x="400" y="480" text-anchor="middle" fill="white" font-size="14">Token Supply</text>
+                <text x="20" y="250" text-anchor="middle" fill="white" font-size="14" transform="rotate(-90, 20, 250)">Price (ETH)</text>
+
+                <!-- Curve path -->
+                <path d="M 50 450 Q 200 350 350 250 T 650 150" stroke="#4ecdc4" stroke-width="4" fill="none"/>
+
+                <!-- Data points -->
+                <circle cx="50" cy="450" r="6" fill="#4ecdc4"/>
+                <circle cx="150" cy="400" r="6" fill="#4ecdc4"/>
+                <circle cx="250" cy="350" r="6" fill="#4ecdc4"/>
+                <circle cx="350" cy="300" r="6" fill="#4ecdc4"/>
+                <circle cx="450" cy="250" r="6" fill="#4ecdc4"/>
+                <circle cx="550" cy="200" r="6" fill="#4ecdc4"/>
+                <circle cx="650" cy="150" r="6" fill="#4ecdc4"/>
+
+                <!-- Price labels -->
+                <text x="35" y="470" fill="white" font-size="12">0.0001</text>
+                <text x="135" y="420" fill="white" font-size="12">0.0005</text>
+                <text x="235" y="370" fill="white" font-size="12">0.001</text>
+                <text x="335" y="320" fill="white" font-size="12">0.005</text>
+                <text x="435" y="270" fill="white" font-size="12">0.01</text>
+                <text x="535" y="220" fill="white" font-size="12">0.05</text>
+                <text x="635" y="170" fill="white" font-size="12">0.1</text>
+
+                <!-- Supply labels -->
+                <text x="50" y="465" text-anchor="middle" fill="white" font-size="12">0</text>
+                <text x="150" y="465" text-anchor="middle" fill="white" font-size="12">200M</text>
+                <text x="250" y="465" text-anchor="middle" fill="white" font-size="12">400M</text>
+                <text x="350" y="465" text-anchor="middle" fill="white" font-size="12">600M</text>
+                <text x="450" y="465" text-anchor="middle" fill="white" font-size="12">800M</text>
+                <text x="550" y="465" text-anchor="middle" fill="white" font-size="12">1B</text>
+                <text x="650" y="465" text-anchor="middle" fill="white" font-size="12">1.2B</text>
+
+                <!-- Formula display -->
+                <rect x="550" y="50" width="200" height="80" fill="rgba(0,0,0,0.7)" rx="5"/>
+                <text x="650" y="75" text-anchor="middle" fill="#4ecdc4" font-size="14" font-weight="bold">Price Formula</text>
+                <text x="650" y="95" text-anchor="middle" fill="white" font-size="12">P = P₀ × (S/S₀)^n</text>
+                <text x="650" y="110" text-anchor="middle" fill="white" font-size="10">n = 1.5 (exponent)</text>
+            </svg>
+        </div>
+
+        <!-- Fee Distribution Diagram -->
+        <div class="diagram">
+            <div class="diagram-title">💰 Fee Distribution System</div>
+            <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background -->
+                <rect width="800" height="400" fill="rgba(255,255,255,0.05)" rx="15"/>
+
+                <!-- Main fee pool -->
+                <rect x="350" y="150" width="100" height="100" fill="rgba(255,255,255,0.2)" stroke="#ffd93d" stroke-width="3" rx="10"/>
+                <text x="400" y="190" text-anchor="middle" fill="#ffd93d" font-size="16" font-weight="bold">1% Fee</text>
+                <text x="400" y="210" text-anchor="middle" fill="#ffd93d" font-size="12">Platform Fee</text>
+
+                <!-- Distribution arrows -->
+                <path d="M 400 150 L 200 100" stroke="#4ecdc4" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+                <path d="M 400 150 L 400 50" stroke="#ff6b6b" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+                <path d="M 400 250 L 600 200" stroke="#9c88ff" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+
+                <!-- Creator share -->
+                <rect x="50" y="50" width="150" height="100" fill="rgba(78,205,196,0.2)" stroke="#4ecdc4" stroke-width="2" rx="10"/>
+                <text x="125" y="90" text-anchor="middle" fill="#4ecdc4" font-size="14" font-weight="bold">50% Creator</text>
+                <text x="125" y="110" text-anchor="middle" fill="#4ecdc4" font-size="12">Token Revenue</text>
+                <text x="125" y="125" text-anchor="middle" fill="#4ecdc4" font-size="10">Project Funding</text>
+
+                <!-- Platform share -->
+                <rect x="325" y="20" width="150" height="100" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="2" rx="10"/>
+                <text x="400" y="60" text-anchor="middle" fill="#ff6b6b" font-size="14" font-weight="bold">25% Platform</text>
+                <text x="400" y="80" text-anchor="middle" fill="#ff6b6b" font-size="12">Operations</text>
+                <text x="400" y="95" text-anchor="middle" fill="#ff6b6b" font-size="10">Development</text>
+
+                <!-- Ecosystem share -->
+                <rect x="600" y="150" width="150" height="100" fill="rgba(156,136,255,0.2)" stroke="#9c88ff" stroke-width="2" rx="10"/>
+                <text x="675" y="190" text-anchor="middle" fill="#9c88ff" font-size="14" font-weight="bold">25% Ecosystem</text>
+                <text x="675" y="210" text-anchor="middle" fill="#9c88ff" font-size="12">Buybacks</text>
+                <text x="675" y="225" text-anchor="middle" fill="#9c88ff" font-size="10">Partnerships</text>
+
+                <!-- Arrow marker -->
+                <defs>
+                    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <stop offset="0%" style="stop-color:#ffd93d"/>
+                        <stop offset="100%" style="stop-color:#ffd93d"/>
+                        <path d="M0,0 L0,6 L9,3 z" fill="#ffd93d"/>
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+
+        <!-- Download buttons -->
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="download-btn" onclick="downloadSVG('architecture')">📥 Download Architecture Diagram</button>
+            <button class="download-btn" onclick="downloadSVG('bonding-curve')">📥 Download Bonding Curve Diagram</button>
+            <button class="download-btn" onclick="downloadSVG('fee-distribution')">📥 Download Fee Distribution Diagram</button>
+        </div>
+    </div>
+
+    <script>
+        function downloadSVG(type) {
+            let svgElement;
+
+            // Find the correct SVG based on type
+            if (type === 'architecture') {
+                svgElement = document.querySelectorAll('svg')[0]; // First SVG (architecture)
+            } else if (type === 'bonding-curve') {
+                svgElement = document.querySelectorAll('svg')[1]; // Second SVG (bonding curve)
+            } else if (type === 'fee-distribution') {
+                svgElement = document.querySelectorAll('svg')[2]; // Third SVG (fee distribution)
+            }
+
+            if (!svgElement) {
+                alert('SVG element not found!');
+                return;
+            }
+
+            // Create a blob from the SVG
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+
+            // Create download link
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(svgBlob);
+            downloadLink.download = `ravo-${type}-diagram.svg`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
+            // Clean up
+            URL.revokeObjectURL(downloadLink.href);
+        }
+    </script>
+</body>
+</html>

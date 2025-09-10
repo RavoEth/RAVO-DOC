@@ -1,0 +1,98 @@
+RAVO Virtual Bonding Curve Visualization
+======================================
+
+Price vs Supply Relationship
+===========================
+
+Price (ETH) │
+            │           ╭─╮
+        0.01│          ╭─╮ │ ╭─╮
+            │         ╭─╮ │ │ │ ╭─╮
+            │        ╭─╮ │ │ │ │ ╭─╮
+        0.005│       ╭─╮ │ │ │ │ │ ╭─╮
+            │      ╭─╮ │ │ │ │ │ │ ╭─╮
+            │     ╭─╮ │ │ │ │ │ │ │ ╭─╮
+            │    ╭─╮ │ │ │ │ │ │ │ │ ╭─╮
+        0.001│   ╭─╮ │ │ │ │ │ │ │ │ │ ╭─╮
+            │  ╭─╮ │ │ │ │ │ │ │ │ │ │ ╭─╮
+            │ ╭─╮ │ │ │ │ │ │ │ │ │ │ │ ╭─╮
+            ╰─╯ │ │ │ │ │ │ │ │ │ │ │ │ ╭─╮
+Supply:     0M  2M 4M 6M 8M 10M 12M 14M 16M 18M 20M
+
+Mathematical Formula:
+===================
+
+Price = InitialPrice × (CurrentSupply ÷ InitialSupply)^Exponent
+
+Parameters:
+==========
+• Initial Price: 0.0001 ETH
+• Initial Supply: 1,000,000 tokens
+• Exponent: 1.5 (controls curve steepness)
+• Max Supply: 800,000,000 tokens
+
+Curve Behavior:
+==============
+
+Linear Curve (Exponent = 1.0):
+- Steady, predictable price increase
+- Good for stable, long-term projects
+- Lower risk, slower growth
+
+Exponential Curve (Exponent = 1.5):
+- Accelerated price growth
+- Higher potential returns
+- Increased volatility
+
+Custom Curve (Exponent = variable):
+- Tailored to project needs
+- Flexible tokenomics
+- Advanced use cases
+
+Trading Dynamics:
+================
+
+BUY Transaction:
+═══════════════
+
+User sends: 1.0 ETH
+Platform fee: 1% (0.01 ETH)
+Net ETH: 0.99 ETH
+
+Virtual Reserves Update:
+• ETH Reserve: +0.99 ETH
+• Token Reserve: decreases proportionally
+• Price: increases based on curve
+
+SELL Transaction:
+════════════════
+
+User sells: 1000 tokens
+Gross ETH: calculated from curve
+Platform fee: 1% of gross
+Net ETH: received by user
+
+Reserve Adjustment:
+• Token Reserve: +1000 tokens
+• ETH Reserve: decreases proportionally
+• Price: decreases based on curve
+
+Migration Trigger:
+═════════════════
+
+When ETH balance ≥ Migration Threshold:
+1. Trading temporarily paused
+2. Uniswap V2 pair created
+3. Contract balance used for liquidity
+4. Trading resumes on Uniswap
+5. Enhanced liquidity achieved
+
+Economic Benefits:
+═════════════════
+
+✅ Instant Liquidity
+✅ No Impermanent Loss
+✅ Fair Price Discovery
+✅ Mathematical Precision
+✅ Community Governance
+✅ Sustainable Economics
